@@ -1,0 +1,615 @@
+{
+    "name": "test",
+    "sweep_dict": {},
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "MOT Coils",
+            "card_number": 2,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Camera Trigger",
+            "card_number": 2,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Trap TTL",
+            "card_number": 2,
+            "channel_number": 3,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Trap FM",
+            "card_number": 2,
+            "channel_number": 4,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Trap AM",
+            "card_number": 2,
+            "channel_number": 5,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Repump TTL",
+            "card_number": 2,
+            "channel_number": 6,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Repump FM",
+            "card_number": 2,
+            "channel_number": 7,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Repump AM",
+            "card_number": 2,
+            "channel_number": 8,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "digital",
+            "name": "Digital",
+            "card_number": 5,
+            "channel_number": 8,
+            "reset": false,
+            "reset_value": 0
+        },
+        {
+            "type": "analog",
+            "name": "D1 AOM FM",
+            "card_number": 3,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "D1 AOM AM",
+            "card_number": 3,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "D1 EOM FM",
+            "card_number": 3,
+            "channel_number": 3,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "D1 EOM AM",
+            "card_number": 3,
+            "channel_number": 4,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Absorption Imaging FM",
+            "card_number": 3,
+            "channel_number": 5,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Absorption Imaging TTL",
+            "card_number": 3,
+            "channel_number": 6,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "Dump MOT",
+        "events": [
+            {
+                "type": "digital",
+                "target_value": 1,
+                "start_time": 0,
+                "channel_name": "Digital",
+                "comment": "Coils Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 3.3,
+                "start_time": 0,
+                "channel_name": "MOT Coils",
+                "comment": "Coils Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "Camera Trigger",
+                "comment": "Cam Trigger Low",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "Trap TTL",
+                "comment": "Trap Beam Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 2.5,
+                "start_time": 0,
+                "channel_name": "Trap FM",
+                "comment": "Default Trap FM",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 1.5,
+                "start_time": 0,
+                "channel_name": "Trap AM",
+                "comment": "Default Trap AM",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "Repump TTL",
+                "comment": "Repump Beam Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 1.9,
+                "start_time": 0,
+                "channel_name": "Repump FM",
+                "comment": "Default Repump FM",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0.5,
+                "start_time": 0,
+                "channel_name": "Repump AM",
+                "comment": "Default Rempump AM",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "D1 AOM FM",
+                "comment": "Default D1 Cooling FM",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "D1 AOM AM",
+                "comment": "D1 AOM Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "D1 EOM FM",
+                "comment": "D1 EOM FM, N/A",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "D1 EOM AM",
+                "comment": "D1 EOM AM, N/A",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 7.5,
+                "start_time": 0,
+                "channel_name": "Absorption Imaging FM",
+                "comment": "Defauly Abs Beam Detuning",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0,
+                "start_time": 0,
+                "channel_name": "Absorption Imaging TTL",
+                "comment": "Absorption Beam Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            }
+        ],
+        "ending_ramps": [],
+        "children": [
+            {
+                "relative_time": 1,
+                "is_sweept": false,
+                "name": "Initiate_MOT",
+                "events": [
+                    {
+                        "type": "jump",
+                        "jump_target_value": 3.3,
+                        "start_time": 1,
+                        "channel_name": "Trap TTL",
+                        "comment": "Trap Beam On",
+                        "start_time_instance": "Initiate_MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 3.3,
+                        "start_time": 1,
+                        "channel_name": "Repump TTL",
+                        "comment": "Repump Beam On",
+                        "start_time_instance": "Initiate_MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 2.5,
+                        "start_time": 1,
+                        "channel_name": "Trap FM",
+                        "comment": "Trap FM",
+                        "start_time_instance": "Initiate_MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 1.9,
+                        "start_time": 1,
+                        "channel_name": "Repump FM",
+                        "comment": "Repump FM",
+                        "start_time_instance": "Initiate_MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 1.5,
+                        "start_time": 1,
+                        "channel_name": "Trap AM",
+                        "comment": "Trap AM",
+                        "start_time_instance": "Initiate_MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 0.5,
+                        "start_time": 1,
+                        "channel_name": "Repump AM",
+                        "comment": "Rempump AM",
+                        "start_time_instance": "Initiate_MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "ramp",
+                        "ramp_type": "Generic",
+                        "start_value": 0,
+                        "end_value": 1,
+                        "func": "2*cos(2*pi*t)",
+                        "resolution": 0.001,
+                        "channel_name": "MOT Coils",
+                        "comment": "Initiate MOT, Coils On",
+                        "start_time_instance": "Initiate_MOT",
+                        "end_time_instance": "Initiate_ToF",
+                        "is_sweept": false
+                    }
+                ],
+                "ending_ramps": [],
+                "children": [
+                    {
+                        "relative_time": 5,
+                        "is_sweept": false,
+                        "name": "Initiate_DFM",
+                        "events": [
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0,
+                                "start_time": 6,
+                                "channel_name": "Trap TTL",
+                                "comment": "End MOT Load, Initiate DFM, Trap Off",
+                                "start_time_instance": "Initiate_DFM",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 2.5,
+                                "start_time": 6,
+                                "channel_name": "Repump FM",
+                                "comment": "Repump FM ~ -2Gamma",
+                                "start_time_instance": "Initiate_DFM",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 2.5,
+                                "start_time": 6,
+                                "channel_name": "Repump AM",
+                                "comment": "Repump AM Low Power",
+                                "start_time_instance": "Initiate_DFM",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 10,
+                                "start_time": 6,
+                                "channel_name": "D1 AOM AM",
+                                "comment": "D1 AOM On",
+                                "start_time_instance": "Initiate_DFM",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0,
+                                "start_time": 6,
+                                "channel_name": "D1 AOM FM",
+                                "comment": "Set the Detuning of the D1 Beam",
+                                "start_time_instance": "Initiate_DFM",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0,
+                                "start_time": 6,
+                                "channel_name": "D1 EOM FM",
+                                "comment": "D1 EOM FM (Should be AM, Unavailable)",
+                                "start_time_instance": "Initiate_DFM",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": []
+                    },
+                    {
+                        "relative_time": 20,
+                        "is_sweept": false,
+                        "name": "Initiate_ToF",
+                        "events": [
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0,
+                                "start_time": 21,
+                                "channel_name": "Trap TTL",
+                                "comment": "Trap Beam Off",
+                                "start_time_instance": "Initiate_ToF",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0,
+                                "start_time": 21,
+                                "channel_name": "Repump TTL",
+                                "comment": "Repump Beam Off",
+                                "start_time_instance": "Initiate_ToF",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0,
+                                "start_time": 21,
+                                "channel_name": "D1 AOM AM",
+                                "comment": "D1 Beams Off",
+                                "start_time_instance": "Initiate_ToF",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0,
+                                "start_time": 21,
+                                "channel_name": "Trap FM",
+                                "comment": "Trap FM Res",
+                                "start_time_instance": "Initiate_ToF",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 4,
+                                "start_time": 21,
+                                "channel_name": "Repump FM",
+                                "comment": "Repump FM Res",
+                                "start_time_instance": "Initiate_ToF",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [
+                            {
+                                "type": "ramp",
+                                "ramp_type": "Generic",
+                                "start_value": 0,
+                                "end_value": 1,
+                                "func": "2*cos(2*pi*t)",
+                                "resolution": 0.001,
+                                "channel_name": "MOT Coils",
+                                "comment": "Initiate MOT, Coils On",
+                                "start_time_instance": "Initiate_MOT",
+                                "end_time_instance": "Initiate_ToF",
+                                "is_sweept": false
+                            }
+                        ],
+                        "children": [
+                            {
+                                "relative_time": -0.0002,
+                                "is_sweept": false,
+                                "name": "Trig_High_IWA",
+                                "events": [
+                                    {
+                                        "type": "jump",
+                                        "jump_target_value": 3.3,
+                                        "start_time": 20.9998,
+                                        "channel_name": "Camera Trigger",
+                                        "comment": "End ToF, Cam Trig High",
+                                        "start_time_instance": "Trig_High_IWA",
+                                        "is_sweept": false
+                                    },
+                                    {
+                                        "type": "jump",
+                                        "jump_target_value": 0.5,
+                                        "start_time": 20.9998,
+                                        "channel_name": "Repump AM",
+                                        "comment": "Repump AM High Power",
+                                        "start_time_instance": "Trig_High_IWA",
+                                        "is_sweept": false
+                                    },
+                                    {
+                                        "type": "jump",
+                                        "jump_target_value": 3.3,
+                                        "start_time": 20.9998,
+                                        "channel_name": "Trap TTL",
+                                        "comment": "Trap Beam On",
+                                        "start_time_instance": "Trig_High_IWA",
+                                        "is_sweept": false
+                                    },
+                                    {
+                                        "type": "jump",
+                                        "jump_target_value": 3.3,
+                                        "start_time": 20.9998,
+                                        "channel_name": "Repump TTL",
+                                        "comment": "Repump Beam On",
+                                        "start_time_instance": "Trig_High_IWA",
+                                        "is_sweept": false
+                                    }
+                                ],
+                                "ending_ramps": [],
+                                "children": [
+                                    {
+                                        "relative_time": 6.4e-05,
+                                        "is_sweept": false,
+                                        "name": "Trig_Low_IWA",
+                                        "events": [
+                                            {
+                                                "type": "jump",
+                                                "jump_target_value": 0,
+                                                "start_time": 20.999864,
+                                                "channel_name": "Camera Trigger",
+                                                "comment": "Cam Trigger Low",
+                                                "start_time_instance": "Trig_Low_IWA",
+                                                "is_sweept": false
+                                            }
+                                        ],
+                                        "ending_ramps": [],
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

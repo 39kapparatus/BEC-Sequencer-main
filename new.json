@@ -1,0 +1,47 @@
+{
+    "name": "NewCards",
+    "sweep_dict": {},
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "four",
+            "card_number": 4,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0,
+            "max_voltage": 10,
+            "min_voltage": -10,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "root",
+        "events": [
+            {
+                "type": "jump",
+                "jump_target_value": 3,
+                "start_time": 0,
+                "channel_name": "four",
+                "comment": "testing",
+                "start_time_instance": "root",
+                "is_sweept": false
+            }
+        ],
+        "ending_ramps": [],
+        "children": [
+            {
+                "relative_time": 10,
+                "is_sweept": false,
+                "name": "end",
+                "events": [],
+                "ending_ramps": [],
+                "children": []
+            }
+        ]
+    }
+}
