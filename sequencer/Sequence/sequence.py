@@ -1282,7 +1282,7 @@ def create_test_time_instance():
 
 if __name__ == "__main__":
     test    = use_new_card()
-    test.to_json("new.json")
+    test.to_json("new2.json")
     exit()
 
 if __name__ == '__main__':
