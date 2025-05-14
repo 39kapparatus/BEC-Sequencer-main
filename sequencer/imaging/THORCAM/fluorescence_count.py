@@ -50,6 +50,7 @@ def Get_Atom_Number(ExposureTime= 2.391 * 10 ** (-3), ROI=[575,425,450,300],
     
     ## Upload the RGB Image and Convert it to Grayscale
     if image is None:
+        #read the filename if image was not provided in the function call
         Image_RGB = cv2.imread(file_name)
         Image_GS = cv2.cvtColor(Image_RGB, cv2.COLOR_BGR2GRAY)
     else:
@@ -84,6 +85,7 @@ def Get_Atom_Number(ExposureTime= 2.391 * 10 ** (-3), ROI=[575,425,450,300],
     # plt.show()
 
     CameraCount = np.sum(Image_GS)
+    #Get the count
     Atom_Number = 4 * np.pi * Power(CameraCount, ExposureTime, Gain) / (h * v * Omega * LambdaPrime) * 1
     return Atom_Number,ROI
 

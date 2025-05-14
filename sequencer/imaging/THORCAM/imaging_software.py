@@ -33,6 +33,7 @@ import matplotlib.pyplot as plt
 
 # --- Your provided code classes ---
 class ImageAcquisitionThread(threading.Thread):
+    #while this thread is running, the camera will try to take pictures and put them in the queue
     def __init__(self, camera):
         super(ImageAcquisitionThread, self).__init__()
         self._camera = camera
@@ -107,7 +108,7 @@ class ImageAcquisitionThread(threading.Thread):
 
 
 
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy
 from PyQt5.QtCore import QTimer, Qt, QPoint
 from PyQt5.QtGui import QImage, QPixmap, QPainter
 import queue
@@ -142,8 +143,10 @@ class DataItem:
         return cls(dictionary_temp=dictionary_temp, images=images)
 
 class LiveViewWidget(QWidget):
+    #this is the widget that displays the image, while the thread is running, it will try to access the queue, see if an image is there and if it is, update the live view
     def __init__(self, image_queue,condition,running,main_camera):
         super(LiveViewWidget, self).__init__()
+        #the condition is what governs the logic for whether or not we are counting atom number
         self.image_queue = image_queue
         self.main_camera = main_camera
         self.condition=condition
@@ -152,8 +155,12 @@ class LiveViewWidget(QWidget):
 
         self.image_label = QLabel(self)
         self.image_label.setAlignment(Qt.AlignCenter)
+        self.image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.image_label.setMinimumSize(1, 1)
         self.count_label = QLabel("Atom Number:")
         self.count_label.setAlignment(Qt.AlignLeft)
+        self.count_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.count_label.setMinimumSize(1, 1)
         layout = QVBoxLayout()
         layout.addWidget(self.image_label)
         layout.addWidget(self.count_label)
@@ -261,6 +268,7 @@ class LiveViewWidget(QWidget):
                 # saved_image.save()
 
     def receive_value(self,value):
+        #this function is connected to the emit function of the fluorescence count intialization and the emit of the exposure time value change
         self.exposure_time=value
 
     def update_image(self):
@@ -272,15 +280,28 @@ class LiveViewWidget(QWidget):
                 data = image.tobytes("raw", "RGB")
                 q_image = QImage(data, image.width, image.height, QImage.Format_RGB888)
                 pixmap = QPixmap.fromImage(q_image)
-                self.image_label.setPixmap(pixmap)
+                scaled_pixmap = pixmap.scaled(self.image_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                self.image_label.setPixmap(scaled_pixmap)
                 self.n+=1
                 if self.running["counting"] == "Once":
+                    #sets the ROI, save the calibration image, then set to run continuously
                     self.count,self.ROI=Get_Atom_Number(ExposureTime=self.exposure_time*10**(-6),select_ROI=True,image=q_image)
                     self.count_label.setText("Atom Number: "+f"{self.count:.3e}")
-                    q_image.save('../data/saving_folder'+r'\\calibration_picture.jpg', "JPG")
+                    try:
+                        save_dir = os.path.join('..', 'data', 'saving_folder')
+                        save_path = os.path.join(save_dir, 'calibration_picture.jpg')
+                        if not os.path.exists(save_dir):
+                            raise FileNotFoundError(f"Save directory does not exist: {os.path.abspath(save_dir)}")
+                        success = q_image.save(save_path, "JPG")
+                        if not success:
+                            raise IOError("QImage failed to save the image.")
+
+                    except Exception as e:
+                        QMessageBox.critical(self, "Save Error", str(e))
                     self.running["counting"] = "Run"
                     self.condition.notify_all()
                 elif self.running["counting"] == "Run" and self.n%100==0:
+                    #every 100 frames, update the atom number
                     self.count,self.ROI=Get_Atom_Number(ExposureTime=self.exposure_time*10**(-6),ROI=self.ROI,image=q_image)
                     self.count_label.setText("Atom Number: "+f"{self.count:.3e}")
                     self.n=1
@@ -484,7 +505,7 @@ from PyQt5.QtCore import Qt
 import queue
 
 class ThorCamControlWidget(QWidget):
-    exposure = pyqtSignal(float)
+    exposure = pyqtSignal(float) #signal to emit the exposure time through the fluorescence count initialize function
     def __init__(self, parent=None):
         super(ThorCamControlWidget, self).__init__(parent)
 
@@ -537,9 +558,9 @@ class ThorCamControlWidget(QWidget):
         self.count_layout = QHBoxLayout()
 
         # Live View
-        self.condition = threading.Condition()
-        self.running= {"counting":"False"}
-        self.image_queue=queue.Queue()
+        self.condition = threading.Condition() # condition for the counting logic
+        self.running= {"counting":"False"} #dict for the condition
+        self.image_queue=queue.Queue() #creates the queue
         self.live_view = LiveViewWidget(image_queue=self.image_queue,condition=self.condition,running=self.running,main_camera=self)
         
         # Camera List
@@ -573,7 +594,7 @@ class ThorCamControlWidget(QWidget):
         self.gain_spin.valueChanged.connect(self.gain_spin.startConfirmationTimer)
         self.exposure_spin.confirmationTimer.timeout.connect(self.exposure_spin.emitValueConfirmed)
         self.exposure_spin.valueChanged.connect(self.exposure_spin.startConfirmationTimer)
-        self.exposure_spin.valueConfirmed.connect(self.live_view.receive_value)
+        self.exposure_spin.valueConfirmed.connect(self.live_view.receive_value) #connects the emit value_confirmed to the live_view. This updates the exposure time
 
         self.camera_mode_compo = QComboBox()
         self.camera_mode_compo.addItems(['Live', 'Trigger'])
@@ -692,10 +713,10 @@ class ThorCamControlWidget(QWidget):
 
     def initialize_count(self,state):
         if state == Qt.Checked:
-            
+            #updates the exposure value for the live_view
             self.exposure.emit(self.exposure_spin.value())
             with self.condition:
-                
+                #starts the calibration
                 self.running["counting"] = "Once"
                 self.condition.notify_all()
                 
@@ -705,6 +726,7 @@ class ThorCamControlWidget(QWidget):
             
         else:
             try:
+                #removes the ROI button and stops the counting
                 self.count_layout.removeWidget(self.update_ROI_button)
                 self.update_ROI_button.setParent(None)
                 with self.condition:
@@ -791,6 +813,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ThorCamControlWidget()
     window.show()
-    window.exposure.connect(window.live_view.receive_value)
+    window.exposure.connect(window.live_view.receive_value) #connects the emit of ThorCamControlWidget to the live_view
     
     sys.exit(app.exec_())
