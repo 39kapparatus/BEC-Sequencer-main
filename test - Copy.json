@@ -1,0 +1,118 @@
+{
+    "name": "test",
+    "sweep_dict": {},
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "Trap AM",
+            "card_number": 2,
+            "channel_number": 5,
+            "reset": false,
+            "reset_value": 1.25,
+            "max_voltage": 2.5,
+            "min_voltage": 0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Trap FM",
+            "card_number": 2,
+            "channel_number": 4,
+            "reset": false,
+            "reset_value": 2.5,
+            "max_voltage": 5,
+            "min_voltage": 0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Trap TTL",
+            "card_number": 2,
+            "channel_number": 3,
+            "reset": false,
+            "reset_value": 3.3,
+            "max_voltage": 3.3,
+            "min_voltage": 0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "Dump MOT",
+        "events": [
+            {
+                "type": "jump",
+                "jump_target_value": 1.25,
+                "start_time": 0,
+                "channel_name": "Trap AM",
+                "comment": "Coils Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 2.5,
+                "start_time": 0,
+                "channel_name": "Trap FM",
+                "comment": "Cam Trigger Low",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 3.3,
+                "start_time": 0,
+                "channel_name": "Trap TTL",
+                "comment": "Trap Beam Off",
+                "start_time_instance": "Dump MOT",
+                "is_sweept": false
+            }],
+        "ending_ramps": [],
+        "children": [
+                {
+                    "relative_time": 1,
+                    "is_sweept": false,
+                    "name": "Initiate_MOT",
+                    "events": [{
+                        "type": "jump",
+                        "jump_target_value": 1.25,
+                        "start_time": 0,
+                        "channel_name": "Trap AM",
+                        "comment": "Coils Off",
+                        "start_time_instance": "Dump MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 2.5,
+                        "start_time": 0,
+                        "channel_name": "Trap FM",
+                        "comment": "Cam Trigger Low",
+                        "start_time_instance": "Dump MOT",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 3.3,
+                        "start_time": 0,
+                        "channel_name": "Trap TTL",
+                        "comment": "Trap Beam Off",
+                        "start_time_instance": "Dump MOT",
+                        "is_sweept": false
+                    }
+                        
+                    ],
+                "ending_ramps": [],
+                "children":[]
+            }
+        ]
+    }
+}

@@ -1047,9 +1047,9 @@ class SequenceManager:
 
         if file_name:
             with open(file_name, 'w') as file:
-                json.dump(data, file, indent=4)
+                json.dump(data[0], file, indent=4)
             
-        return json.dumps(data, indent=4)
+        return json.dumps(data[0], indent=4)
     
     @staticmethod
     def from_json( file_name: Optional[str] = None,json_input: Optional[str] = None) -> 'SequenceManager':
