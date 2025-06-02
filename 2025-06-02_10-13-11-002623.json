@@ -1,0 +1,54 @@
+{
+    "name": "t",
+    "sweep_dict": {
+        "root|tets|target_value": [
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+        ]
+    },
+    "sweep_values": [
+        {
+            "sweep_type": "event_behavior",
+            "event_time_instance": "root",
+            "channel_name": "tets",
+            "parameter_name": "target_value",
+            "value": 4.0
+        }
+    ],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "tets",
+            "card_number": 2,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 1.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "root",
+        "events": [
+            {
+                "type": "jump",
+                "jump_target_value": 4.0,
+                "start_time": 0,
+                "channel_name": "tets",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": true
+            }
+        ],
+        "ending_ramps": [],
+        "children": []
+    }
+}

@@ -11,6 +11,19 @@
 ' Stacksize                      = 1000
 ' Info_Last_Save                 = DESKTOP-6MSM8KU  DESKTOP-6MSM8KU\E3
 '<Header End>
+'<ADbasic Header, Headerversion 001.001>
+' Process_Number                 = 1
+' Initial_Processdelay           = 1000
+' Eventsource                    = Timer
+' Control_long_Delays_for_Stop   = No
+' Priority                       = High
+' Version                        = 1
+' ADbasic_Version                = 6.4.0
+' Optimize                       = Yes
+' Optimize_Level                 = 1
+' Stacksize                      = 1000
+' Info_Last_Save                 = DESKTOP-IAC6L9U  DESKTOP-IAC6L9U\Mahmoud Yasser
+'<Header End>
 '
 '
 ' Documentation of the enteir code :
@@ -23,7 +36,11 @@
 
 #define SIZE 50000000 'size of the data arrays
 
-
+#define d_io 1 'the digital I/O card is set to module number 1
+#define a_out1 2'one of the analog outs is module 2
+#define a_out2 3 'one of the analog outs is module 3
+#define a_out3 4
+#define a_out4 5
 
 #define MAX_EVENT_COUNT Par_1 'controls when the looping stops; assigned to Par_1 in E3_load_seq.m
 #define MAX_UPDATES Par_3 'max number of updates per EVENT run
@@ -109,11 +126,12 @@ INIT:
   'cards have 8 channels we sync enable all 8 of them
   P2_SYNC_ENABLE(a_out1,0FFh)
   P2_SYNC_ENABLE(a_out2,0FFh)
-
+  P2_SYNC_ENABLE(a_out3,0FFh)
+  P2_SYNC_ENABLE(a_out4,0FFh)
 
 
 EVENT:
-  P2_SYNC_ALL(0111b) 
+  P2_SYNC_ALL(011111b) 
   
   'works with SYNC_ENABLE to ensure simultaneous updates are indeed simultaneous
     

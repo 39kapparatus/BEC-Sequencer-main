@@ -115,9 +115,7 @@ class CustomSequenceWidget(QWidget):
         # print(sequence_name)
         if sequence_name:
             self.selected_sequences_list.addItem(sequence_name)
-            self.runner_widget.refreash_custom_sweep_queue()
-
-
+            self.runner_widget.refresh_custom_sweep_queue()
 
     def get_sequences_names(self):
         return  [self.selected_sequences_list.item(i).text() for i in range(self.selected_sequences_list.count())]
@@ -150,9 +148,9 @@ class Runner(QWidget):
         super().__init__()
         self.sequence_manager = sequence_manager
 
-        self.paramerters_path = os.path.join(os.path.dirname(__file__), 'runner_default_settings.json')
+        self.parameters_path = os.path.join(os.path.dirname(__file__), 'runner_default_settings.json')
 
-        with open(self.paramerters_path, 'r') as json_file:
+        with open(self.parameters_path, 'r') as json_file:
             loaded_settings = json.load(json_file)
             self.save_path = loaded_settings["default_save_path"]
         # Create these folders if they don't exist 
@@ -164,7 +162,7 @@ class Runner(QWidget):
 
         
         
-        self.refreash_sweep_queue()
+        self.refresh_sweep_queue()
         self.boot_ADwin()
 
         
@@ -175,12 +173,13 @@ class Runner(QWidget):
         self.initUI()
     def save_as_default_settings(self):
         # Define the default settings
+        print(self.save_path)
         camera_default_settings = {
             "default_save_path": self.save_path,
         }
 
         # Write the settings to a JSON file
-        with open(self.paramerters_path, 'w') as json_file:
+        with open(self.parameters_path, 'w') as json_file:
             json.dump(camera_default_settings, json_file, indent=4)
         
         
@@ -256,19 +255,19 @@ class Runner(QWidget):
         self.randomize_queue_button = QPushButton("Randomize")
         self.randomize_queue_button.clicked.connect(self.randomize_queue)
 
-        self.refreash_queue_button = QPushButton("refresh")
-        self.refreash_queue_button.clicked.connect(self.refreash_queue)
+        self.refresh_queue_button = QPushButton("refresh")
+        self.refresh_queue_button.clicked.connect(self.refresh_queue)
 
 
         self.repeat_sweep_text = QSpinBox()
-
+        self.repeat_sweep_text.setValue(1)
 
 
         self.sweep_runner_layout = QHBoxLayout()
         self.sweep_runner_layout.addWidget(self.run_sweep_button)
         self.sweep_runner_layout.addWidget(self.combo_sweep)
         self.sweep_runner_layout.addWidget(self.randomize_queue_button)
-        self.sweep_runner_layout.addWidget(self.refreash_queue_button)
+        self.sweep_runner_layout.addWidget(self.refresh_queue_button)
         self.sweep_runner_layout.addWidget(self.repeat_sweep_text)
 
 
@@ -288,8 +287,8 @@ class Runner(QWidget):
         self.setWindowTitle('Runner Widget')
         self.setWindowIcon(QIcon('path_to_icon.png'))  # Add path to your icon
         try: 
-            self.refreash_queue()
-            self.refreash_custom_sweep_queue()
+            self.refresh_queue()
+            self.refresh_custom_sweep_queue()
         except:
             pass
 
@@ -301,7 +300,7 @@ class Runner(QWidget):
     def saver_handler_checkBox(self):
         pass 
 
-    def refreash_sweep_queue(self):
+    def refresh_sweep_queue(self):
         # FIX : Display an error message if the channels on different sequences overlap
         try:
             try:
@@ -314,18 +313,18 @@ class Runner(QWidget):
             print("No sweeps there")
             print   (e)
     
-    def refreash_custom_sweep_queue(self):
+    def refresh_custom_sweep_queue(self):
         try:
             self.custom_sweep_queue =self.sequence_manager.get_sweep_sequences_custom(self.custom_sequence_widget.get_sequences_names())
         except Exception as e:
             print("No sweeps there")
             print   (e)
 
-    def refreash_queue(self,Working = False):
+    def refresh_queue(self,Working = False):
         try:
             if not Working:
-                self.refreash_sweep_queue()
-                self.refreash_custom_sweep_queue()
+                self.refresh_sweep_queue()
+                self.refresh_custom_sweep_queue()
 
             if self.combo_sweep.currentText() == "main":
                 self.sweep_viewer.populate_table(self.main_sweep_queue)
@@ -392,10 +391,10 @@ class Runner(QWidget):
         try:
             if self.combo_sweep.currentText() == "main":
                 self.main_sweep_queue 
-                # run the first sequence in the queue and pop it out untill there is not element and refreash UI 
+                # run the first sequence in the queue and pop it out untill there is not element and refresh UI 
                 for sequence in self.main_sweep_queue:
                     self.run_sequence(sequence)
-                    self.refreash_queue(Working=True)
+                    self.refresh_queue(Working=True)
 
 
 
@@ -404,7 +403,7 @@ class Runner(QWidget):
                     sequence = self.custom_sweep_queue[key]
                     self.run_sequence(sequence)
 
-                    self.refreash_queue(Working=True)
+                    self.refresh_queue(Working=True)
 
 
 

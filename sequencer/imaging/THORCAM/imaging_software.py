@@ -18,7 +18,7 @@ import copy
 from PyQt5.QtGui import QImage, QPixmap, QPainter, QFont, QFontMetrics
 import numpy as np
 from sequencer.Sequence.sequence import Sequence
-from fluorescence_count import *
+from sequencer.imaging.THORCAM.fluorescence_count import *
 import time
 
 try:

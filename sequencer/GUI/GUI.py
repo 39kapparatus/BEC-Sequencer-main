@@ -227,7 +227,7 @@ class AddChildTimeInstanceDialog(QDialog):
 
         self.relative_time_edit = QLineEdit()
         self.relative_time_edit.setValidator(QIntValidator())
-        layout.addRow('Relative Time (us):', self.relative_time_edit)
+        layout.addRow('Relative Time (s):', self.relative_time_edit)
 
         self.add_button = QPushButton("Add")
         self.add_button.clicked.connect(self.add_child)
@@ -1092,6 +1092,7 @@ class EventsWidget(QWidget):
 
         self.inner_widget = QWidget()
         self.inner_layout = QGridLayout(self.inner_widget)
+        self.inner_layout.setSpacing(0)
         
         self.time_instances = self.sequence.root_time_instance.get_all_time_instances()
         self.time_instances.sort(key=lambda ti: ti.get_absolute_time())
@@ -1325,7 +1326,6 @@ class SequenceViewerWdiget(QWidget):
         self.sequence = sequence
         self.syncing = False  # Flag to prevent multiple updates
         self.layout_main = QGridLayout()
-        
         self.setLayout(self.layout_main)
 
 
@@ -1626,6 +1626,7 @@ class SequenceManagerWidget(QWidget):
         try:
             self.camera_widget = ThorCamControlWidget()
             self.camera_widget.show()
+            self.camera_widget.exposure.connect(self.camera_widget.live_view.receive_value) #connects the emit of ThorCamControlWidget to the live_view
         except Exception as e:
             error_message = f"Can not Open Camera, An error occurred: {str(e)}"
             QMessageBox.critical(self, "Error", error_message)

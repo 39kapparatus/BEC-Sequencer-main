@@ -221,6 +221,7 @@ class ADwin_Driver:
         print("Booting ADwin-system... ")
         
         BTL = self.adw.ADwindir + "adwin" + self.PROCESSORTYPE + ".btl"
+        print(BTL)
         self.adw.Boot(BTL)
 
         print("ADwin booted\n")
@@ -229,6 +230,7 @@ class ADwin_Driver:
             self.adw.Load_Process(
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), process_file)
             )
+            print(os.path.join(os.path.dirname(os.path.abspath(__file__)), process_file))
             print("Default process loaded\n")
         else:
             self.adw.Load_Process(process_file)

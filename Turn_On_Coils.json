@@ -1,0 +1,120 @@
+{
+    "name": "Turn On Coils",
+    "sweep_dict": {},
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "Coil TTL",
+            "card_number": 5,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 3.5,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Discharge Capacitors TTL",
+            "card_number": 5,
+            "channel_number": 5,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 3.5,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Charge Capacitors TTL",
+            "card_number": 5,
+            "channel_number": 4,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 3.5,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "Start Loading Capacitors",
+        "events": [
+            {
+                "type": "jump",
+                "jump_target_value": 3.3,
+                "start_time": 0,
+                "channel_name": "Charge Capacitors TTL",
+                "comment": "Start charging",
+                "start_time_instance": "Start Loading Capacitors",
+                "is_sweept": false
+            }
+        ],
+        "ending_ramps": [],
+        "children": [
+            {
+                "relative_time": 1000,
+                "is_sweept": false,
+                "name": "Turn On Coils",
+                "events": [
+                    {
+                        "type": "jump",
+                        "jump_target_value": 3.3,
+                        "start_time": 1000,
+                        "channel_name": "Discharge Capacitors TTL",
+                        "comment": "Discharge",
+                        "start_time_instance": "Turn On Coils",
+                        "is_sweept": false
+                    },
+                    {
+                        "type": "jump",
+                        "jump_target_value": 3.3,
+                        "start_time": 1000,
+                        "channel_name": "Coil TTL",
+                        "comment": "Coils on",
+                        "start_time_instance": "Turn On Coils",
+                        "is_sweept": false
+                    }
+                ],
+                "ending_ramps": [],
+                "children": [
+                    {
+                        "relative_time": 1000,
+                        "is_sweept": false,
+                        "name": "Power Supply Takes Over",
+                        "events": [
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0.0,
+                                "start_time": 2000,
+                                "channel_name": "Discharge Capacitors TTL",
+                                "comment": "Stop discharging",
+                                "start_time_instance": "Power Supply Takes Over",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0.0,
+                                "start_time": 2000,
+                                "channel_name": "Charge Capacitors TTL",
+                                "comment": "Stop charging",
+                                "start_time_instance": "Power Supply Takes Over",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}
