@@ -294,9 +294,16 @@ class Runner(QWidget):
 
         self.show()
     def change_save_location(self):
-        self.save_path = QFileDialog.getExistingDirectory(self, "Select Save Folder", self.save_path)
+        selected_path = QFileDialog.getExistingDirectory(self, "Select Save Folder", self.save_path)
+
+        # Check for empty or None result
+        if selected_path and selected_path.strip():
+            self.save_path = selected_path
+        else:
+            self.save_path = "."  # Default to current directory
+
         self.save_as_default_settings()
-        
+
     def saver_handler_checkBox(self):
         pass 
 

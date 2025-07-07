@@ -226,7 +226,7 @@ class AddChildTimeInstanceDialog(QDialog):
         layout.addRow("Name:", self.name_edit)
 
         self.relative_time_edit = QLineEdit()
-        self.relative_time_edit.setValidator(QIntValidator())
+        self.relative_time_edit.setValidator(QDoubleValidator(decimals=6))
         layout.addRow('Relative Time (s):', self.relative_time_edit)
 
         self.add_button = QPushButton("Add")
@@ -244,10 +244,10 @@ class AddChildTimeInstanceDialog(QDialog):
             return
 
         try:
-            relative_time = int(relative_time)
+            relative_time = round(float(relative_time),6)
             self.accept()
         except ValueError:
-            QMessageBox.warning(self, "Input Error", "Relative time must be an integer.")
+            QMessageBox.warning(self, "Input Error", "Relative time must be a number with at most 6 decimal places.")
             return
 
         self.name = name
@@ -333,7 +333,7 @@ class TimeInstanceLabel(QWidget):
             self.name_edit.setText(self.time_instance.name)
             self.name_edit.editingFinished.connect(self.change_name)
     def change_relative_time(self):
-        self.time_instance.edit_relative_time(int(self.relative_time_edit.text()))
+        self.time_instance.edit_relative_time(round(float(self.relative_time_edit.text()),6))
         self.parent_widget.parent_widget.refresh_time_axis()
         self.parent_widget.parent_widget.event_table.order_UI()
 
@@ -376,14 +376,14 @@ class TimeInstanceLabel(QWidget):
     def add_child_time_instance(self):
         dialog = AddChildTimeInstanceDialog(self)
         if dialog.exec_() == QDialog.Accepted:
-            # try:
+            try:
                 self.time_instance.add_child_time_instance(dialog.name, dialog.relative_time)
                 self.parent_widget.parent_widget.event_table.add_time_instance(
                     self.time_instance.get_child_time_instance_by_name(dialog.name)
                 )
                 self.parent_widget.parent_widget.refresh_time_axis()
-            # except Exception as e:
-            #     QMessageBox.critical(self, "Error", str(e))
+            except Exception as e:
+                 QMessageBox.critical(self, "Error", str(e))
 
     def edit_parent_time_instance(self):
         dialog = EditParentTimeInstanceDialog(self)
@@ -494,6 +494,7 @@ class ChannelButton(QPushButton):
         self.parent_widget.sequence.delete_channel(self.channel.name)
         self.parent_widget.refresh_UI() # Flag For fix 
         self.parent_widget.parent_widget.event_table.delete_channel(self.channel)
+    
     def add_channel(self):
         # open the add channel dialog
         dialog = ChannelDialog()
@@ -502,15 +503,17 @@ class ChannelButton(QPushButton):
         index = self.get_channel_index()
 
         if dialog.exec_() == QDialog.Accepted:
-            
-            data= dialog.get_data()
-            if data['type'] == 'Analog':
-                self.parent_widget.sequence.add_analog_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], reset_value=data['reset_value'], max_voltage=data['max_voltage'], min_voltage=data['min_voltage'],index=index+1)
-            else:
-                self.parent_widget.sequence.add_digital_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], index=index+1)
-            new_channel = self.parent_widget.sequence.find_channel_by_name(data['name'])
-            self.parent_widget.refresh_UI()
-            self.parent_widget.parent_widget.event_table.add_channel(new_channel)
+            try:
+                data= dialog.get_data()
+                if data['type'] == 'Analog':
+                    self.parent_widget.sequence.add_analog_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], reset_value=data['reset_value'], max_voltage=data['max_voltage'], min_voltage=data['min_voltage'],index=index+1)
+                else:
+                    self.parent_widget.sequence.add_digital_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], index=index+1)
+                new_channel = self.parent_widget.sequence.find_channel_by_name(data['name'])
+                self.parent_widget.refresh_UI()
+                self.parent_widget.parent_widget.event_table.add_channel(new_channel)
+            except:
+                self.add_channel()
 
     def edit_channel(self):
         # open the edit channel dialog
@@ -519,12 +522,16 @@ class ChannelButton(QPushButton):
         else:
             dialog = Edit_Digital_Channel(self.channel)
         if dialog.exec_() == QDialog.Accepted:
-            data = dialog.get_data()
-            if isinstance(self.channel, Digital_Channel):
-                self.parent_widget.sequence.edit_digital_channel(name=self.channel.name,new_name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'])
-            else: 
-                self.parent_widget.sequence.edit_analog_channel(name=self.channel.name,new_name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], reset_value=data['reset_value'], max_voltage=data['max_voltage'], min_voltage=data['min_voltage'])
-            self.parent_widget.refresh_UI()
+            try:
+                data = dialog.get_data()
+                if isinstance(self.channel, Digital_Channel):
+                    self.parent_widget.sequence.edit_digital_channel(name=self.channel.name,new_name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'])
+                else: 
+                    self.parent_widget.sequence.edit_analog_channel(name=self.channel.name,new_name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], reset_value=data['reset_value'], max_voltage=data['max_voltage'], min_voltage=data['min_voltage'])
+                self.parent_widget.refresh_UI()
+            except ValueError:
+                error_message = "There was a problem with your edit, changes were not saved. Make sure to put a value in every row and that Max Voltage is larger than Min Voltage"
+                QMessageBox.critical(self, "Error", error_message)
     
     def change_order(self,index):
         # open input dialog to get the index which is a drop down list of indexes
@@ -564,6 +571,7 @@ class ChannelLabelListWidget(QWidget):
     def setup_UI(self):
         # Use QGridLayout instead of QVBoxLayout
         self.layout = QVBoxLayout(self)
+        #self.layout.setSpacing(15)
         
         self.scroll_area = ScrollAreaWithShiftScroll(self)
         self.scroll_area.setWidgetResizable(True)
@@ -573,7 +581,11 @@ class ChannelLabelListWidget(QWidget):
         self.inner_widget = QWidget()
         self.inner_layout = QGridLayout(self.inner_widget)  # Use QGridLayout here as well
 
+        #self.inner_layout.setSpacing(15)
+        #self.inner_widget.adjustSize()
+        #self.inner_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.scroll_area.setWidget(self.inner_widget)
+
         self.layout.addWidget(self.scroll_area)
         self.setLayout(self.layout)
         
@@ -590,6 +602,7 @@ class ChannelLabelListWidget(QWidget):
         # Add buttons to the grid layout
         for row, channel in enumerate(self.sequence.channels):
             button = ChannelButton(channel, self)  # Assuming ChannelButton is a QPushButton
+            #button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             self.buttons.append(button)
             self.inner_layout.addWidget(button, row, 0,alignment=Qt.AlignBottom)  # Add each button in a new row
             self.inner_layout.setRowMinimumHeight(row,150)
@@ -601,19 +614,24 @@ class ChannelLabelListWidget(QWidget):
             self.inner_layout.setRowMinimumHeight(0,150)
             self.buttons.append(button)
         
-        self.inner_widget.setLayout(self.inner_layout)
+        #self.inner_widget.adjustSize()
+        #self.scroll_area.widget().resize(self.inner_widget.sizeHint())
+        #self.inner_widget.setLayout(self.inner_layout)
     def add_channel(self):
         # open the add channel dialog
         dialog = ChannelDialog()
         if dialog.exec_() == QDialog.Accepted:
-            data= dialog.get_data()
-            if data['type'] == 'Analog':
-                self.sequence.add_analog_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], reset_value=data['reset_value'], max_voltage=data['max_voltage'], min_voltage=data['min_voltage'])
-            else:
-                self.sequence.add_digital_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'])
-            new_channel = self.sequence.find_channel_by_name(data['name'])
-            self.refresh_UI()
-            self.parent_widget.event_table.add_channel(new_channel)
+            try:
+                data= dialog.get_data()
+                if data['type'] == 'Analog':
+                    self.sequence.add_analog_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'], reset_value=data['reset_value'], max_voltage=data['max_voltage'], min_voltage=data['min_voltage'])
+                else:
+                    self.sequence.add_digital_channel(name=data['name'], card_number=data['card_number'], channel_number=data['channel_number'])
+                new_channel = self.sequence.find_channel_by_name(data['name'])
+                self.refresh_UI()
+                self.parent_widget.event_table.add_channel(new_channel)
+            except:
+                self.add_channel()
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QComboBox, QDoubleSpinBox, QDialog
 
@@ -968,24 +986,30 @@ class EventButton(QWidget):
                 dialog = DigitalEventDialog(self.channel, self.time_instance)
             dialog.add_ok_cancel_buttons()
             if dialog.exec_() == QDialog.Accepted:
-                behavior = dialog.get_behavior()
-                if isinstance(self.channel, Analog_Channel):
-                    if behavior['behavior_type'] == 'Ramp':
-                        end_time_instance_name = behavior['end_time_instance']
-                        end_time_instance = self.parent_widget.sequence.find_TimeInstance_by_name(end_time_instance_name)
-                        ramp_type =RampType(behavior['ramp_type']) 
-                        if ramp_type == RampType. GENERIC:
-                            behavior_instance = Ramp(self.time_instance,end_time_instance, ramp_type,func= exp_to_func( behavior['generic_function']),resolution=behavior['resolution'])
-                        else: 
-                            behavior_instance = Ramp(self.time_instance,end_time_instance, ramp_type, behavior['start_value'], behavior['end_value'], resolution=behavior['resolution'])
-                        self.parent_widget.sequence.add_event(self.channel.name,behavior_instance, self.time_instance, end_time_instance=end_time_instance,comment= behavior['comment'])
-                    elif behavior['behavior_type'] == 'Jump':
-                        behavior_instance = Jump(behavior['jump_target_value'])
+                try:
+                    behavior = dialog.get_behavior()
+                    if isinstance(self.channel, Analog_Channel):
+                        if behavior['behavior_type'] == 'Ramp':
+                            end_time_instance_name = behavior['end_time_instance']
+                            end_time_instance = self.parent_widget.sequence.find_TimeInstance_by_name(end_time_instance_name)
+                            ramp_type =RampType(behavior['ramp_type']) 
+                            if ramp_type == RampType. GENERIC:
+                                behavior_instance = Ramp(self.time_instance,end_time_instance, ramp_type,func= exp_to_func( behavior['generic_function']),resolution=behavior['resolution'])
+                            else: 
+                                behavior_instance = Ramp(self.time_instance,end_time_instance, ramp_type, behavior['start_value'], behavior['end_value'], resolution=behavior['resolution'])
+                            self.parent_widget.sequence.add_event(self.channel.name,behavior_instance, self.time_instance, end_time_instance=end_time_instance,comment= behavior['comment'])
+                        elif behavior['behavior_type'] == 'Jump':
+                            behavior_instance = Jump(behavior['jump_target_value'])
+                            try:
+                                self.parent_widget.sequence.add_event(self.channel.name,behavior_instance, self.time_instance,comment= behavior['comment'])
+                            except ValueError as e:
+                                QMessageBox.critical(self, "Error", str(e))
+                    else:
+                        behavior_instance = Digital(behavior['state'])
                         self.parent_widget.sequence.add_event(self.channel.name,behavior_instance, self.time_instance,comment= behavior['comment'])
-                else:
-                    behavior_instance = Digital(behavior['state'])
-                    self.parent_widget.sequence.add_event(self.channel.name,behavior_instance, self.time_instance,comment= behavior['comment'])
-                self.refresh_UI()
+                    self.refresh_UI()
+                except ValueError:
+                    QMessageBox.critical(self, "Error", "At least one value was missing")
             self.refresh_row_after_me()
         # except Exception as e:
         #         QMessageBox.critical(self, "Error", f"An error occurred while adding the event: {str(e)}")
@@ -1093,6 +1117,7 @@ class EventsWidget(QWidget):
         self.inner_widget = QWidget()
         self.inner_layout = QGridLayout(self.inner_widget)
         self.inner_layout.setSpacing(0)
+        #self.inner_layout.setVerticalSpacing(0)
         
         self.time_instances = self.sequence.root_time_instance.get_all_time_instances()
         self.time_instances.sort(key=lambda ti: ti.get_absolute_time())
@@ -1342,6 +1367,7 @@ class SequenceViewerWdiget(QWidget):
         self.refresh_events_color()
         # Create and configure widgets
         self.channel_list = ChannelLabelListWidget(self.sequence,parent_widget=self)
+        #self.channel_list.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.event_table = EventsWidget(self.sequence, parent_widget=self)
 
         self.time_axis = TimeInstanceWidget(self.sequence.root_time_instance, parent_widget=self)
@@ -1582,6 +1608,7 @@ class SequenceManagerWidget(QWidget):
         self.layout.addWidget(self.sequence_view_area, 2)
 
         self.update_buttons()
+        self.resize(1200, 800)
 
     def create_menu_bar(self):
         menu_bar = QMenuBar(self)
@@ -1626,7 +1653,7 @@ class SequenceManagerWidget(QWidget):
         try:
             self.camera_widget = ThorCamControlWidget()
             self.camera_widget.show()
-            self.camera_widget.exposure.connect(self.camera_widget.live_view.receive_value) #connects the emit of ThorCamControlWidget to the live_view
+            #self.camera_widget.exposure.connect(self.camera_widget.live_view.receive_value) #connects the emit of ThorCamControlWidget to the live_view
         except Exception as e:
             error_message = f"Can not Open Camera, An error occurred: {str(e)}"
             QMessageBox.critical(self, "Error", error_message)

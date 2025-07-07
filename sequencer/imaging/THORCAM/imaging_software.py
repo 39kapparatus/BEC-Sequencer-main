@@ -18,8 +18,6 @@ import copy
 from PyQt5.QtGui import QImage, QPixmap, QPainter, QFont, QFontMetrics
 import numpy as np
 from sequencer.Sequence.sequence import Sequence
-from sequencer.imaging.THORCAM.fluorescence_count import *
-import time
 
 try:
     # if on Windows, use the provided setup script to add the DLLs folder to the PATH
@@ -33,7 +31,6 @@ import matplotlib.pyplot as plt
 
 # --- Your provided code classes ---
 class ImageAcquisitionThread(threading.Thread):
-    #while this thread is running, the camera will try to take pictures and put them in the queue
     def __init__(self, camera):
         super(ImageAcquisitionThread, self).__init__()
         self._camera = camera
@@ -95,7 +92,7 @@ class ImageAcquisitionThread(threading.Thread):
                         pil_image,numpy_array = self._get_image(frame)
                     self._image_queue.put_nowait((pil_image,numpy_array))
             except queue.Full:
-                #print("queue.Full")
+                print("queue.Full")
                 pass
             except Exception as error:
                 print("Here error")
@@ -108,7 +105,7 @@ class ImageAcquisitionThread(threading.Thread):
 
 
 
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PyQt5.QtCore import QTimer, Qt, QPoint
 from PyQt5.QtGui import QImage, QPixmap, QPainter
 import queue
@@ -143,27 +140,15 @@ class DataItem:
         return cls(dictionary_temp=dictionary_temp, images=images)
 
 class LiveViewWidget(QWidget):
-    #this is the widget that displays the image, while the thread is running, it will try to access the queue, see if an image is there and if it is, update the live view
-    def __init__(self, image_queue,condition,running,main_camera):
+    def __init__(self, image_queue,main_camera):
         super(LiveViewWidget, self).__init__()
-        #the condition is what governs the logic for whether or not we are counting atom number
         self.image_queue = image_queue
         self.main_camera = main_camera
-        self.condition=condition
-        self.running=running
-        self.n=0
 
         self.image_label = QLabel(self)
         self.image_label.setAlignment(Qt.AlignCenter)
-        self.image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.image_label.setMinimumSize(1, 1)
-        self.count_label = QLabel("Atom Number:")
-        self.count_label.setAlignment(Qt.AlignLeft)
-        self.count_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        self.count_label.setMinimumSize(1, 1)
         layout = QVBoxLayout()
         layout.addWidget(self.image_label)
-        layout.addWidget(self.count_label)
         self.setLayout(layout)
 
         self.timer = QTimer(self)
@@ -192,8 +177,8 @@ class LiveViewWidget(QWidget):
             print(os.path.join(self.main_camera.default_source_path,current_source_file))
             
             temp_seq = Sequence.from_json(file_name=os.path.join(self.main_camera.default_source_path,current_source_file))
-            parameters = temp_seq.get_parameter_dict()
-            self.main_camera.parameter_list.update_parameters(parameters)
+            paramters = temp_seq.get_parameter_dict()
+            self.main_camera.paramerter_list.update_parameters(paramters)
             
             current_source_file= current_source_file.replace(".json","")
             
@@ -267,44 +252,15 @@ class LiveViewWidget(QWidget):
                 # # Save the saved_image
                 # saved_image.save()
 
-    def receive_value(self,value):
-        #this function is connected to the emit function of the fluorescence count intialization and the emit of the exposure time value change
-        self.exposure_time=value
-
     def update_image(self):
         try:
-            with self.condition:
-                image,numpy_data = self.image_queue.get_nowait()
-                self.save_images(numpy_data)
-                image = image.convert('RGB')
-                data = image.tobytes("raw", "RGB")
-                q_image = QImage(data, image.width, image.height, QImage.Format_RGB888)
-                pixmap = QPixmap.fromImage(q_image)
-                scaled_pixmap = pixmap.scaled(self.image_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                self.image_label.setPixmap(scaled_pixmap)
-                self.n+=1
-                if self.running["counting"] == "Once":
-                    #sets the ROI, save the calibration image, then set to run continuously
-                    self.count,self.ROI=Get_Atom_Number(ExposureTime=self.exposure_time*10**(-6),select_ROI=True,image=q_image)
-                    self.count_label.setText("Atom Number: "+f"{self.count:.3e}")
-                    try:
-                        save_dir = os.path.join('..', 'data', 'saving_folder')
-                        save_path = os.path.join(save_dir, 'calibration_picture.jpg')
-                        if not os.path.exists(save_dir):
-                            raise FileNotFoundError(f"Save directory does not exist: {os.path.abspath(save_dir)}")
-                        success = q_image.save(save_path, "JPG")
-                        if not success:
-                            raise IOError("QImage failed to save the image.")
-
-                    except Exception as e:
-                        QMessageBox.critical(self, "Save Error", str(e))
-                    self.running["counting"] = "Run"
-                    self.condition.notify_all()
-                elif self.running["counting"] == "Run" and self.n%100==0:
-                    #every 100 frames, update the atom number
-                    self.count,self.ROI=Get_Atom_Number(ExposureTime=self.exposure_time*10**(-6),ROI=self.ROI,image=q_image)
-                    self.count_label.setText("Atom Number: "+f"{self.count:.3e}")
-                    self.n=1
+            image,numpy_data = self.image_queue.get_nowait()
+            self.save_images(numpy_data)
+            image = image.convert('RGB')
+            data = image.tobytes("raw", "RGB")
+            q_image = QImage(data, image.width, image.height, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(q_image)
+            self.image_label.setPixmap(pixmap)
         except queue.Empty:
             pass
 
@@ -505,15 +461,14 @@ from PyQt5.QtCore import Qt
 import queue
 
 class ThorCamControlWidget(QWidget):
-    exposure = pyqtSignal(float) #signal to emit the exposure time through the fluorescence count initialize function
     def __init__(self, parent=None):
         super(ThorCamControlWidget, self).__init__(parent)
 
         # Load default parameters
         # Folder paths are in the same directory as the script
-        self.parameters_path = os.path.join(os.path.dirname(__file__), 'camera_default_settings.json')
+        self.paramerters_path = os.path.join(os.path.dirname(__file__), 'camera_default_settings.json')
 
-        with open(self.parameters_path, 'r') as json_file:
+        with open(self.paramerters_path, 'r') as json_file:
             loaded_settings = json.load(json_file)
             self.default_source_path = loaded_settings["default_source_path"]
             self.default_destination_path = loaded_settings["default_destination_path"]
@@ -543,7 +498,7 @@ class ThorCamControlWidget(QWidget):
         }
 
         # Write the settings to a JSON file
-        with open(self.parameters_path, 'w') as json_file:
+        with open(self.paramerters_path, 'w') as json_file:
             json.dump(camera_default_settings, json_file, indent=4)
 
     def init_ui(self):
@@ -555,13 +510,9 @@ class ThorCamControlWidget(QWidget):
         self.controls_layout = QHBoxLayout()
         self.settings_layout = QHBoxLayout()
         self.save_layout = QHBoxLayout()
-        self.count_layout = QHBoxLayout()
 
         # Live View
-        self.condition = threading.Condition() # condition for the counting logic
-        self.running= {"counting":"False"} #dict for the condition
-        self.image_queue=queue.Queue() #creates the queue
-        self.live_view = LiveViewWidget(image_queue=self.image_queue,condition=self.condition,running=self.running,main_camera=self)
+        self.live_view = LiveViewWidget(image_queue=queue.Queue(),main_camera=self)
         
         # Camera List
         self.refresh_cameras_button = QPushButton("Refresh Cameras")
@@ -594,7 +545,6 @@ class ThorCamControlWidget(QWidget):
         self.gain_spin.valueChanged.connect(self.gain_spin.startConfirmationTimer)
         self.exposure_spin.confirmationTimer.timeout.connect(self.exposure_spin.emitValueConfirmed)
         self.exposure_spin.valueChanged.connect(self.exposure_spin.startConfirmationTimer)
-        self.exposure_spin.valueConfirmed.connect(self.live_view.receive_value) #connects the emit value_confirmed to the live_view. This updates the exposure time
 
         self.camera_mode_compo = QComboBox()
         self.camera_mode_compo.addItems(['Live', 'Trigger'])
@@ -615,7 +565,7 @@ class ThorCamControlWidget(QWidget):
         self.controls_layout.addWidget(self.open_button)
         self.controls_layout.addWidget(self.close_button)
 
-        # Experiment, Save and Count Layouts
+        # Experiment and Save Layout
         self.experiment_mode = QComboBox()
         self.experiment_mode.addItems(['No Experiment', 'Ongoing Experiment'])
         self.experiment_mode.currentIndexChanged.connect(self.change_experiment_mode)
@@ -632,29 +582,18 @@ class ThorCamControlWidget(QWidget):
         self.source_folder_button = QPushButton("Select Source Folder")
         self.source_folder_button.clicked.connect(self.select_source_folder)
 
-        self.count_checkbox = QCheckBox("Fluorescence Count")
-        self.count_checkbox.stateChanged.connect(self.initialize_count)
-
-        self.update_ROI_button = QPushButton("Update ROI")
-        self.update_ROI_button.clicked.connect(self.update_ROI)
-
         self.save_layout.addWidget(QLabel("Experiment Mode:"))
         self.save_layout.addWidget(self.experiment_mode)
         self.save_layout.addWidget(self.save_checkbox)
 
-        self.count_label=QLabel("Fluorescence Count:")
-        self.count_layout.addWidget(self.count_label)
-        self.count_layout.addWidget(self.count_checkbox)
-
         self.main_layout.addLayout(self.controls_layout)
         self.main_layout.addLayout(self.settings_layout)
         self.main_layout.addLayout(self.save_layout)
-        self.main_layout.addLayout(self.count_layout)
 
         self.live_params = QHBoxLayout()
-        self.parameter_list = ParameterListWidget()
+        self.paramerter_list = ParameterListWidget()
         
-        self.live_params.addWidget(self.parameter_list)
+        self.live_params.addWidget(self.paramerter_list)
         self.live_params.addWidget(self.live_view, 2)
         self.main_layout.addLayout(self.live_params, 2)
 
@@ -711,37 +650,6 @@ class ThorCamControlWidget(QWidget):
             if self.save_checkbox.isChecked():
                 self.save_layout.addWidget(self.save_folder_button)
 
-    def initialize_count(self,state):
-        if state == Qt.Checked:
-            #updates the exposure value for the live_view
-            self.exposure.emit(self.exposure_spin.value())
-            with self.condition:
-                #starts the calibration
-                self.running["counting"] = "Once"
-                self.condition.notify_all()
-                
-                
-                #make the update ROI button appear
-                self.count_layout.addWidget(self.update_ROI_button)
-            
-        else:
-            try:
-                #removes the ROI button and stops the counting
-                self.count_layout.removeWidget(self.update_ROI_button)
-                self.update_ROI_button.setParent(None)
-                with self.condition:
-                    self.running["counting"] = "False"
-                    self.condition.notify_all()
-            except Exception as e:
-                print(f"Exception occurred: {e}")
-        
-
-    def update_ROI(self): 
-        with self.condition:     
-            self.running["counting"] = "Once"
-            self.condition.notify_all()
-            
-
     def select_save_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Save Folder", self.default_saving_path)
         if folder:
@@ -783,6 +691,12 @@ class ThorCamControlWidget(QWidget):
         index = self.camera_list.currentIndex()
         if index >= 0:
             self.thor_cam.open_camera(camera_index=index)
+
+            # If save is checked and in No Experiment mode, allow live view
+            if self.save_checkbox.isChecked() and self.experiment_mode.currentText() == "No Experiment":
+                self.camera_mode_compo.setCurrentIndex(0)  # Live
+                self.camera_mode_compo.setEnabled(False)
+
             self.thor_cam.change_camera_live_mode(self.camera_mode_compo.currentText())
             self.thor_cam.start_acquisition_thread()
             self.live_view.image_queue = self.thor_cam.acquisition_thread.get_output_queue()
@@ -813,6 +727,5 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ThorCamControlWidget()
     window.show()
-    window.exposure.connect(window.live_view.receive_value) #connects the emit of ThorCamControlWidget to the live_view
     
     sys.exit(app.exec_())

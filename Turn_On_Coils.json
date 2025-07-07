@@ -61,14 +61,14 @@
         "ending_ramps": [],
         "children": [
             {
-                "relative_time": 1000,
+                "relative_time": 0.001,
                 "is_sweept": false,
                 "name": "Turn On Coils",
                 "events": [
                     {
                         "type": "jump",
                         "jump_target_value": 3.3,
-                        "start_time": 1000,
+                        "start_time": 0.001,
                         "channel_name": "Discharge Capacitors TTL",
                         "comment": "Discharge",
                         "start_time_instance": "Turn On Coils",
@@ -77,7 +77,7 @@
                     {
                         "type": "jump",
                         "jump_target_value": 3.3,
-                        "start_time": 1000,
+                        "start_time": 0.001,
                         "channel_name": "Coil TTL",
                         "comment": "Coils on",
                         "start_time_instance": "Turn On Coils",
@@ -87,14 +87,14 @@
                 "ending_ramps": [],
                 "children": [
                     {
-                        "relative_time": 1000,
+                        "relative_time": 0.001,
                         "is_sweept": false,
                         "name": "Power Supply Takes Over",
                         "events": [
                             {
                                 "type": "jump",
                                 "jump_target_value": 0.0,
-                                "start_time": 2000,
+                                "start_time": 0.002,
                                 "channel_name": "Discharge Capacitors TTL",
                                 "comment": "Stop discharging",
                                 "start_time_instance": "Power Supply Takes Over",
@@ -103,7 +103,7 @@
                             {
                                 "type": "jump",
                                 "jump_target_value": 0.0,
-                                "start_time": 2000,
+                                "start_time": 0.002,
                                 "channel_name": "Charge Capacitors TTL",
                                 "comment": "Stop charging",
                                 "start_time_instance": "Power Supply Takes Over",

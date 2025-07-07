@@ -62,17 +62,27 @@ class ChannelDialog(QDialog):
             self.reset_value_edit.hide()
 
     def get_data(self):
-        data = {
-            'type': self.type_combo.currentText(),
-            'name': self.name_edit.text(),
-            'card_number': int(self.card_number_edit.text()),
-            'channel_number': int(self.channel_number_edit.text()),
-        }
-        if data['type'] == 'Analog':
-            data['max_voltage'] = float(self.max_voltage_edit.text())
-            data['min_voltage'] = float(self.min_voltage_edit.text())
-            data['reset_value'] = float(self.reset_value_edit.text())
-        return data
+        try:
+            data = {
+                'type': self.type_combo.currentText(),
+                'name': self.name_edit.text(),
+                'card_number': int(self.card_number_edit.text()),
+                'channel_number': int(self.channel_number_edit.text()),
+            }
+            if data['type'] == 'Analog':
+                data['max_voltage'] = float(self.max_voltage_edit.text())
+                data['min_voltage'] = float(self.min_voltage_edit.text())
+                data['reset_value'] = float(self.reset_value_edit.text())
+                if float(data['max_voltage'])>=float(data['min_voltage']):
+                    return data
+                else:
+                    error_message = "Max Voltage should be larger than Min Voltage"
+                    QMessageBox.critical(self, "Error", error_message)
+            else:
+                return data
+        except ValueError:
+            error_message = "Please put a value for every row"
+            QMessageBox.critical(self, "Error", error_message)
 
 class CustomDialog(QDialog):
     def __init__(self, channels, types, parent=None):

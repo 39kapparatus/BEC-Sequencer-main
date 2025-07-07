@@ -328,10 +328,16 @@ class Sequence:
             channel.reset_value = reset_value
         if default_voltage_func is not None:
             channel.default_voltage_func = default_voltage_func
-        if max_voltage is not None:
-            channel.max_voltage = max_voltage
-        if min_voltage is not None:
-            channel.min_voltage = min_voltage
+        
+        if max_voltage is not None and min_voltage is not None:
+            if float(max_voltage)>=float(min_voltage):
+                channel.max_voltage = max_voltage
+                channel.min_voltage = min_voltage
+            else:
+                raise ValueError("Max Voltage should be larger than Min Voltage")
+
+        
+
 
     def delete_channel(self, name: str) -> None:
         channel = self.find_channel_by_name(name)

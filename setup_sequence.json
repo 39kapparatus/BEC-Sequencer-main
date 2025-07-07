@@ -1,0 +1,226 @@
+{
+    "name": "Setup",
+    "sweep_dict": {},
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "Coil TTL",
+            "card_number": 5,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "digital",
+            "name": "Trap AOM TTL",
+            "card_number": 1,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0
+        },
+        {
+            "type": "digital",
+            "name": "Repump AOM TTL",
+            "card_number": 1,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0
+        },
+        {
+            "type": "analog",
+            "name": "D1 AOM AM",
+            "card_number": 3,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "D1 AOM FM",
+            "card_number": 3,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Repump AOM AM",
+            "card_number": 2,
+            "channel_number": 8,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Trap AOM FM",
+            "card_number": 2,
+            "channel_number": 4,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Repump AOM FM",
+            "card_number": 2,
+            "channel_number": 7,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Trap AOM AM",
+            "card_number": 2,
+            "channel_number": 5,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Helmholtz TTL",
+            "card_number": 5,
+            "channel_number": 3,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "root",
+        "events": [
+            {
+                "type": "jump",
+                "jump_target_value": 5.0,
+                "start_time": 0,
+                "channel_name": "Coil TTL",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0.0,
+                "start_time": 0,
+                "channel_name": "Helmholtz TTL",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 2.5,
+                "start_time": 0,
+                "channel_name": "Trap AOM FM",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 1.25,
+                "start_time": 0,
+                "channel_name": "Trap AOM AM",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 2.5,
+                "start_time": 0,
+                "channel_name": "Repump AOM FM",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 1.25,
+                "start_time": 0,
+                "channel_name": "Repump AOM AM",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 2.83,
+                "start_time": 0,
+                "channel_name": "D1 AOM FM",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 1.25,
+                "start_time": 0,
+                "channel_name": "D1 AOM AM",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "digital",
+                "target_value": 1,
+                "start_time": 0,
+                "channel_name": "Trap AOM TTL",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "digital",
+                "target_value": 1,
+                "start_time": 0,
+                "channel_name": "Repump AOM TTL",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            }
+        ],
+        "ending_ramps": [],
+        "children": []
+    }
+}
