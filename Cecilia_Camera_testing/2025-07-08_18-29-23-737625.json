@@ -1,0 +1,128 @@
+{
+    "name": "t",
+    "sweep_dict": {
+        "root|2|target_value": [
+            1.0,
+            1.5,
+            2.0,
+            2.5,
+            3.0,
+            3.5,
+            4.0,
+            4.5,
+            5.0
+        ]
+    },
+    "sweep_values": [
+        {
+            "sweep_type": "event_behavior",
+            "event_time_instance": "root",
+            "channel_name": "2",
+            "parameter_name": "target_value",
+            "value": 2.5
+        }
+    ],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "2",
+            "card_number": 2,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 10.0,
+            "min_voltage": -10.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Camera Trigger",
+            "card_number": 2,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "root",
+        "events": [
+            {
+                "type": "jump",
+                "jump_target_value": 2.5,
+                "start_time": 0,
+                "channel_name": "2",
+                "comment": "j1",
+                "start_time_instance": "root",
+                "is_sweept": true
+            }
+        ],
+        "ending_ramps": [],
+        "children": [
+            {
+                "relative_time": 5,
+                "is_sweept": false,
+                "name": "end",
+                "events": [
+                    {
+                        "type": "jump",
+                        "jump_target_value": 7.0,
+                        "start_time": 5,
+                        "channel_name": "2",
+                        "comment": "j",
+                        "start_time_instance": "end",
+                        "is_sweept": false
+                    }
+                ],
+                "ending_ramps": [],
+                "children": [
+                    {
+                        "relative_time": -1.0,
+                        "is_sweept": false,
+                        "name": "Arm Camera",
+                        "events": [
+                            {
+                                "type": "jump",
+                                "jump_target_value": 3.3,
+                                "start_time": 4.0,
+                                "channel_name": "Camera Trigger",
+                                "comment": "",
+                                "start_time_instance": "Arm Camera",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": [
+                            {
+                                "relative_time": 0.001,
+                                "is_sweept": false,
+                                "name": "Trigger Camera",
+                                "events": [
+                                    {
+                                        "type": "jump",
+                                        "jump_target_value": 0.0,
+                                        "start_time": 4.001,
+                                        "channel_name": "Camera Trigger",
+                                        "comment": "",
+                                        "start_time_instance": "Trigger Camera",
+                                        "is_sweept": false
+                                    }
+                                ],
+                                "ending_ramps": [],
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

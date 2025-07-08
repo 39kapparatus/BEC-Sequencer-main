@@ -1,0 +1,58 @@
+NOTES:
+
+1. to run debugger need Python>3.9. Since I don't want to update system Python in case it messes with software compatbility, I'll use a venv
+2. To run a venv, needed to enable Script running in Powershell (used ChatGPT and ran the following in powershell)
+    'Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned'
+3. virtual env titled 'betterPython' is now active
+
+
+In Python 3.13 run this to start:
+    python -m sequencer.GUI.GUI
+    (full line: (.venv) PS C:\Users\E3\Desktop\BEC-Sequencer-main (1)\BEC-Sequencer-main> python -m sequencer.GUI.GUI)
+
+Okay debugging now. Make sure you run 'CS-Python... ' config on debugger
+
+DEBUGGING
+(setup): run sweep once, open camera and set save file locations, run sweep again
+(observations):
+1.  imaging_software.py line 264, self.image_queue.get_nowait() is throwing queue.Empty error so we go to 'pass' instead of self.save_images
+
+    '''
+   def update_image(self):
+        try:
+            image,numpy_data = self.image_queue.get_nowait()
+            self.save_images(numpy_data)
+            image = image.convert('RGB')
+            data = image.tobytes("raw", "RGB")
+            q_image = QImage(data, image.width, image.height, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(q_image)
+            self.image_label.setPixmap(pixmap)
+        except queue.Empty:
+            pass
+    '''
+
+    Note if I look at local object image_queue, it has property 'maxsize=0' which seems funny. It is also very empty.
+
+
+2. Two threads running.
+(setup): open Camera. Then run Sweep (and save data)
+(observations): printing from both threads (debugger stops both). For every 1 print of 'getting image', I am starting and completing an experiement before 
+'got image' is confirmed. Basically idk if they are synchronized. 
+
+3. imigaging_software.py line 215 is removing old .npz file. If all files are written to same name, we are essentially overwritting.
+> see if modifying img save name works.
+(UPDATE): nope lol.
+
+4. We are first reading all files in folder, then assigning current names to those names. Dont do that lol.
+
+5. also idk why keep getting queue.full(). why restrict qeueue size to 2?
+
+6. WHERE: line201, adding numStr to file path (trying to make them different). but this accidentally addes after.npz so it cant save oops
+
+7. Chaning save file names to use 'temp' version (which was defined previously, not by me)
+
+8. other things to try: increase queue size...
+9. check: is it loading data then saving repeatedly, or (load all) then (save all)?
+    - currently doing (load all) then (save all). I think code could've worked if it was iterating though...
+
+WHERE: REWRITING SAVEfILE

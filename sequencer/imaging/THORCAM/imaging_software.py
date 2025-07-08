@@ -28,6 +28,7 @@ except ImportError:
 
 
 import matplotlib.pyplot as plt
+import random
 
 # --- Your provided code classes ---
 class ImageAcquisitionThread(threading.Thread):
@@ -55,7 +56,10 @@ class ImageAcquisitionThread(threading.Thread):
 
         self._bit_depth = camera.bit_depth
         self._camera.image_poll_timeout_ms = 0
-        self._image_queue = queue.Queue(maxsize=2)
+        ###### CHANGES
+        # self._image_queue = queue.Queue(maxsize=2)
+        self._image_queue = queue.Queue(maxsize=20)
+
         self._stop_event = threading.Event()
 
     def get_output_queue(self):
@@ -77,22 +81,30 @@ class ImageAcquisitionThread(threading.Thread):
         return Image.fromarray(color_image_data, mode='RGB')
 
     def _get_image(self, frame):
+        print("getting image")
         scaled_image = frame.image_buffer >> (self._bit_depth - 8)
         return Image.fromarray(scaled_image),frame.image_buffer
 
     def run(self):
+        temp=0
         while not self._stop_event.is_set():
             try:
+                temp+=1
                 frame = self._camera.get_pending_frame_or_null()
                 
                 if frame is not None:
                     if self._is_color:
+                        print(f"getting color image {temp}")
                         pil_image = self._get_color_image(frame)
+                        print(f"got color image {temp}")
+
                     else:
+                        print(f"getting non-color image {temp}")
                         pil_image,numpy_array = self._get_image(frame)
+                        print(f"got non-color image {temp}")
                     self._image_queue.put_nowait((pil_image,numpy_array))
             except queue.Full:
-                print("queue.Full")
+                print("lol queue.Full")
                 pass
             except Exception as error:
                 print("Here error")
@@ -126,6 +138,7 @@ class DataItem:
         images_np = np.array(self.images, dtype=object)
         
         # Save both arrays in an npz file
+        print(file_name,"\n", dictionary_temp_np, "\n", "images: ", self.images)
         np.savez(file_name, dictionary_temp=dictionary_temp_np, images=images_np)
     
     @classmethod
@@ -157,6 +170,97 @@ class LiveViewWidget(QWidget):
 
 
 
+    def getCurrFile(self, default_path):
+        '''
+            Returns file with 'current' keyword from the path (usually source/destination) folder if exists. Else, gives warning.
+        '''
+        current_file = [file for file in os.listdir(default_path) if file.startswith("current")]
+        if current_file:
+            current_file= current_file[0]
+            return current_file
+        else:
+            # make a message box to tell the user to select the source/destination folder 
+            QMessageBox.warning(self, "Warning", f"Please select a valid {default_path} file. The current folder is empty")
+            return
+
+
+    def saveToPath(self, numpy_data, dirPath, filePath, fileName):
+        '''
+        dirPath = self.main_camera.default_destination_path
+        file = current_destination_file.npz
+        filename = without .npz
+
+        '''
+        # save to the destination path
+        # unpack the file and save it again to the destination path
+        
+        old_data =DataItem.load(os.path.join(dirPath, filePath))
+        old_data.images.append(numpy_data)
+        print('saving to the default saving path1')
+        
+        ###### CHANGES
+        # remove the old npz file 
+        # os.remove(os.path.join(self.main_camera.default_destination_path,current_destination_file))  COMMENTED OUT FOR TESTING
+        # old_data.save(os.path.join(self.main_camera.default_destination_path,current_destination_file))
+        
+        old_data.save(os.path.join(dirPath, fileName))
+
+        
+
+    def save_images2(self, numpy_data):
+        '''
+        if ongoing: check if sourceFile exists
+            for json in sourceFiles:
+                get sequence params from json and update camera params
+                if saveChecked:
+                    if destinationPaths exist:
+                        for each save filePath:
+                            if already exists data here: append my data to images then overwrite 
+                            else: make new Data object(json + img), then save img
+                    else:
+                        make new default Data object(default_Json + img), then save img
+        else: save to default saving path
+        '''
+        if self.main_camera.experiment_mode.currentText() == 'Ongoing Experiment':
+            current_source_fileJSON = self.getCurrFile(self.main_camera.default_source_path)
+            current_source_file= current_source_fileJSON.replace("current_","")
+            current_source_file= current_source_file.replace(".json","")
+
+            # get parameters from sequence (and update camera settings on GUI (i think?))
+            temp_seq = Sequence.from_json(file_name=os.path.join(self.main_camera.default_source_path,current_source_fileJSON))
+            parameters = temp_seq.get_parameter_dict()
+            self.main_camera.paramerter_list.update_parameters(parameters)
+
+            if self.main_camera.save_checkbox.isChecked():
+                current_destination_fileNPZ = self.getCurrFile(self.main_camera.default_destination_path)
+                current_destination_file = current_destination_fileNPZ.replace("current_","")
+                current_destination_file = current_destination_file.replace(".npz","")
+
+                if current_source_file == current_destination_file:
+                    self.saveToPath(numpy_data, self.main_camera.default_destination_path, current_destination_fileNPZ, current_destination_file)
+                else:
+                    os.rename(os.path.join(self.main_camera.default_destination_path, current_destination_fileNPZ), 
+                              os.path.join(self.main_camera.default_destination_path, current_destination_file))
+
+                    # save to the default saving path
+                    print('saving to the default saving path2')
+                    with open(os.path.join(self.main_camera.default_source_path, current_source_file+".json")) as json_file:
+                        json_str_data = json_file.read()
+                        json_data = json.loads(json_str_data)
+
+                        
+
+                    new_data = DataItem(dictionary_temp=json_data, images=[numpy_data])
+                    ###### CHANGES
+                    # new_data.save(os.path.join(self.main_camera.default_destination_path,current_source_file))
+                    new_data.save(os.path.join(self.main_camera.default_destination_path,current_destination_file_temp))
+
+
+
+
+            
+        return
+
     def save_images(self,numpy_data):
         # check if the save checkbox is checked 
         
@@ -181,6 +285,9 @@ class LiveViewWidget(QWidget):
             self.main_camera.paramerter_list.update_parameters(paramters)
             
             current_source_file= current_source_file.replace(".json","")
+
+            num = random.randint(1, 100)
+            numStr=str(num)
             
             if self.main_camera.save_checkbox.isChecked():
                     # check if current file is also the current file 
@@ -188,25 +295,35 @@ class LiveViewWidget(QWidget):
                     if current_destination_file:
                         current_destination_file = current_destination_file[0]
                         current_destination_file_temp = current_destination_file.replace("current_","")
-                        current_destination_file_temp = current_destination_file_temp.replace(".npz","")
+                        current_destination_file_temp = current_destination_file_temp.replace(".npz","") + '_' + numStr
                         print("comparing folders")
                         print(current_destination_file_temp)
                         print(current_source_file)
                         
+                        # we want to be here
                         if current_source_file.replace("current_","") == current_destination_file_temp:
                             # save to the destination path
                             # unpack the file and save it again to the destination path
-                            
+                           
                             old_data =DataItem.load(os.path.join(self.main_camera.default_destination_path,current_destination_file))
                             old_data.images.append(numpy_data)
                             print('saving to the default saving path1')
+                            
+                            ###### CHANGES
                             # remove the old npz file 
-                            os.remove(os.path.join(self.main_camera.default_destination_path,current_destination_file))
-                            old_data.save(os.path.join(self.main_camera.default_destination_path,current_destination_file))
+                            # os.remove(os.path.join(self.main_camera.default_destination_path,current_destination_file))  COMMENTED OUT FOR TESTING
+                            # old_data.save(os.path.join(self.main_camera.default_destination_path,current_destination_file))
+                            old_data.save(os.path.join(self.main_camera.default_destination_path,current_destination_file_temp))
+
                         else:
                             # save to the default saving path
                             # rename the current file in the destination path folder to be without current
-                            os.rename(os.path.join(self.main_camera.default_destination_path,current_destination_file),os.path.join(self.main_camera.default_destination_path,current_destination_file.replace("current_","")))
+
+                            ###### CHANGES
+                            # os.rename(os.path.join(self.main_camera.default_destination_path,current_destination_file),os.path.join(self.main_camera.default_destination_path,current_destination_file.replace("current_","")))
+                            os.rename(os.path.join(self.main_camera.default_destination_path,current_destination_file),os.path.join(self.main_camera.default_destination_path,current_destination_file_temp.replace("current_","")))
+
+                            
                             # save to the default saving path
                             print('saving to the default saving path2')
                             with open(os.path.join(self.main_camera.default_source_path, current_source_file+".json")) as json_file:
@@ -216,7 +333,10 @@ class LiveViewWidget(QWidget):
                                 
 
                             new_data = DataItem(dictionary_temp=json_data, images=[numpy_data])
-                            new_data.save(os.path.join(self.main_camera.default_destination_path,current_source_file))
+                            ###### CHANGES
+                            # new_data.save(os.path.join(self.main_camera.default_destination_path,current_source_file))
+                            new_data.save(os.path.join(self.main_camera.default_destination_path,current_destination_file_temp))
+
                     else:
                         # save to the default saving path
                         # rename the current file in the destination path folder to be without current
