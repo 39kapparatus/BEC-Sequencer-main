@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 import numpy as np
 from PyQt5.QtWidgets import QApplication, QMenuBar,QMainWindow, QLabel, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QAction, QFileDialog
@@ -68,18 +69,25 @@ class DataItemViewer(QWidget):
             self.data_item = DataItem.load(filename)
             print("self.data_item.images")
             print(len(self.data_item.images))
-            self.json_text.setText(self.data_item.json_str)
+            # self.json_text.setText(self.data_item.json_str) # dunno what this is. the Field dne. 
             self.current_image_index = 0
             self.show_image(self.current_image_index)
 
     def show_image(self, index):
         if self.data_item and 0 <= index < len(self.data_item.images):
             image_array = self.data_item.images[index]
-            height, width = image_array.shape
+            try:
+                height, width = image_array.shape
+            except:
+                image_array = np.array(image_array)
+                height, width = image_array.shape
             bytes_per_line = width
             q_image = QImage(image_array.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
+            print(q_image)
             pixmap = QPixmap.fromImage(q_image)
             self.image_label.setPixmap(pixmap)
+            ###### CHANGES
+            # q_image.save("testIMAGE.png", "PNG")
 
     def next_image(self):
         if self.data_item:
