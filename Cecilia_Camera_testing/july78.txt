@@ -1,0 +1,14 @@
+NOTES
+
+1. update camera is seeing right amount of data (9 saveImg calls for 9 parameters). But not convinced the data is actually different each of the 9 times
+
+2. In one call to updateCamera, image queue already has 9 images. Each subsequent call pops one from queue. Now how to guarantee image in queue matches data params in saveFile?
+
+3. in dataviewer, all imgs are black (i think my channel isn't doing anything though?)
+
+4. can confirm in og code, each updateCamera call is only looking at the last value in the sweep, and there is only ever one item in image queue corresponding to this value.
+
+solution 1: call updateCamera to saveImgs concurrently, then use old code which looks for 'current' keyword
+solution 2: when taking picture on Thorcam, add timestamp so we know which image corresponds to which data param (or better yet, add the data param itself)
+
+Solved. Each img is saved with parameter value it corresponds to. All parameters get an image.
