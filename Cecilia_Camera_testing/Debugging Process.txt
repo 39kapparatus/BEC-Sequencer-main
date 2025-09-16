@@ -1,0 +1,53 @@
+BUG
+(what should have happened)
+- Sweep was running and labelling each new file with 'current'. At the same time, imagining_software.py is querying camera for images, when it sees an image, it loads 
+the data file labelled 'current' and saves the image with an identical timestamp
+
+(problem)
+- sweep was completing, and then imaging_software.py starts its query. This means only the last file from sweep is still labelled 'current', so only this file will get an
+image saved
+
+(solution)
+- changed maxsize of image queue from 2 to 20 (see imaging_software.py, class ImageAcquisitionThread(threading.Thread) line 63), so that every image that gets taken is stored in the queue. When sweep is finished,
+imaging_software goes through whole queue and saves each image (removed search for 'current' keyword).
+ 
+
+(future solution)
+- parallelize
+
+
+TO RUN DEBUGGER 
+- Need Python > 3.9 to use debugger. Go to the Python file to debug. In bottom right of vscode (blue bar), 
+    select Python version and change to 3.13.5 if not already (it might be 3.9.*)
+- This version of Python has updates about how you can import modules from your files so your previous way of running files might throw import errors (see PYTHON 3.13 section). 
+- To start debugger (step 1), go to 'Run and Debug' extension on left sidebar. At the top, choose settings(gear logo) to add a configuration. For Example:
+      {
+            "name": "CS-Python Debugger: data_viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "sequencer.imaging.THORCAM.data_viewer",
+            "console": "integratedTerminal"
+      }
+      is a configuration named "CS-Python Debugger: data_viewer" that runs the file "sequencer\imaging\THORCAM\data_viewer.py" assuming you are in the BEC-Sequencer-main directory.
+      To add your own config to run a different file, just make a copy and change the "name" and "module" values.
+- To actually start debugger (step 2), to the left of the gear icon choose your config from the dropdown. Then press the green play button to run.
+- All your controls will appear in a toolbar at the top of the screen.
+
+(the toolbar)
+- Once debugger is running, you can click to the left of a fileline to add a breakpoint (red dot). The code will stop at  your breakpoints, at which point you can use 
+your toolbar functionalities. From left to right, these are:
+> 'continue'/'pause' to let the code run freely or pause it until the next breakpoint,
+> 'step over' a function to let it execute and move to next line,
+> 'step into' a function to dive deeper into its execution, 
+> 'step out' of a function when you no longer want to see how it executes, 
+> 'restart' debugger,
+> 'stop' execution.
+
+
+PYTHON 3.13
+- Example of how to run files:
+    To run 'sequencer/GUI/GUI.py' from the 'BEC-Sequencer-main' directory, run this in terminal: 'python -m sequencer.GUI.GUI'
+    ('python' specifies language, '-m' specifies there are module dependencies, the rest is the path. Note there is no '.py' at the end)
+- If you don't need the debugger, you could go back to using 3.9.* versions. Version 3.9.5 runs with no issue.
+
+

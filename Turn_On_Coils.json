@@ -10,7 +10,20 @@
             "channel_number": 2,
             "reset": false,
             "reset_value": 0.0,
-            "max_voltage": 3.5,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "Scope Trigger",
+            "card_number": 5,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
             "min_voltage": 0.0,
             "LIMIT": 65535,
             "RANGE": 20,
@@ -23,7 +36,7 @@
             "channel_number": 5,
             "reset": false,
             "reset_value": 0.0,
-            "max_voltage": 3.5,
+            "max_voltage": 5.0,
             "min_voltage": 0.0,
             "LIMIT": 65535,
             "RANGE": 20,
@@ -36,7 +49,7 @@
             "channel_number": 4,
             "reset": false,
             "reset_value": 0.0,
-            "max_voltage": 3.5,
+            "max_voltage": 5.0,
             "min_voltage": 0.0,
             "LIMIT": 65535,
             "RANGE": 20,
@@ -50,10 +63,19 @@
         "events": [
             {
                 "type": "jump",
-                "jump_target_value": 3.3,
+                "jump_target_value": 5.0,
                 "start_time": 0,
                 "channel_name": "Charge Capacitors TTL",
-                "comment": "Start charging",
+                "comment": "",
+                "start_time_instance": "Start Loading Capacitors",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 5.0,
+                "start_time": 0,
+                "channel_name": "Scope Trigger",
+                "comment": "",
                 "start_time_instance": "Start Loading Capacitors",
                 "is_sweept": false
             }
@@ -61,57 +83,76 @@
         "ending_ramps": [],
         "children": [
             {
-                "relative_time": 0.001,
+                "relative_time": 0.01,
                 "is_sweept": false,
-                "name": "Turn On Coils",
+                "name": "Stop Loading Capacitors and Turn On",
                 "events": [
                     {
                         "type": "jump",
-                        "jump_target_value": 3.3,
-                        "start_time": 0.001,
-                        "channel_name": "Discharge Capacitors TTL",
-                        "comment": "Discharge",
-                        "start_time_instance": "Turn On Coils",
+                        "jump_target_value": 0.0,
+                        "start_time": 0.01,
+                        "channel_name": "Charge Capacitors TTL",
+                        "comment": "",
+                        "start_time_instance": "Stop Loading Capacitors and Turn On",
                         "is_sweept": false
                     },
                     {
                         "type": "jump",
-                        "jump_target_value": 3.3,
-                        "start_time": 0.001,
+                        "jump_target_value": 5.0,
+                        "start_time": 0.01,
                         "channel_name": "Coil TTL",
-                        "comment": "Coils on",
-                        "start_time_instance": "Turn On Coils",
+                        "comment": "",
+                        "start_time_instance": "Stop Loading Capacitors and Turn On",
                         "is_sweept": false
                     }
                 ],
                 "ending_ramps": [],
                 "children": [
                     {
-                        "relative_time": 0.001,
+                        "relative_time": 0.0001,
                         "is_sweept": false,
-                        "name": "Power Supply Takes Over",
+                        "name": "Discharge Capacitors",
                         "events": [
                             {
                                 "type": "jump",
-                                "jump_target_value": 0.0,
-                                "start_time": 0.002,
+                                "jump_target_value": 5.0,
+                                "start_time": 0.0101,
                                 "channel_name": "Discharge Capacitors TTL",
-                                "comment": "Stop discharging",
-                                "start_time_instance": "Power Supply Takes Over",
-                                "is_sweept": false
-                            },
-                            {
-                                "type": "jump",
-                                "jump_target_value": 0.0,
-                                "start_time": 0.002,
-                                "channel_name": "Charge Capacitors TTL",
-                                "comment": "Stop charging",
-                                "start_time_instance": "Power Supply Takes Over",
+                                "comment": "",
+                                "start_time_instance": "Discharge Capacitors",
                                 "is_sweept": false
                             }
                         ],
                         "ending_ramps": [],
-                        "children": []
+                        "children": [
+                            {
+                                "relative_time": 0.001,
+                                "is_sweept": false,
+                                "name": "Power Supply Takes over",
+                                "events": [
+                                    {
+                                        "type": "jump",
+                                        "jump_target_value": 0.0,
+                                        "start_time": 0.011099999999999999,
+                                        "channel_name": "Discharge Capacitors TTL",
+                                        "comment": "",
+                                        "start_time_instance": "Power Supply Takes over",
+                                        "is_sweept": false
+                                    },
+                                    {
+                                        "type": "jump",
+                                        "jump_target_value": 0.0,
+                                        "start_time": 0.011099999999999999,
+                                        "channel_name": "Scope Trigger",
+                                        "comment": "",
+                                        "start_time_instance": "Power Supply Takes over",
+                                        "is_sweept": false
+                                    }
+                                ],
+                                "ending_ramps": [],
+                                "children": []
+                            }
+                        ]
                     }
                 ]
             }

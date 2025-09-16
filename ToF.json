@@ -1,0 +1,120 @@
+{
+    "name": "ToF",
+    "sweep_dict": {
+        "Intialize Parameters|Trap AOM FM|target_value": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+        ]
+    },
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "digital",
+            "name": "3",
+            "card_number": 1,
+            "channel_number": 3,
+            "reset": false,
+            "reset_value": 0
+        },
+        {
+            "type": "analog",
+            "name": "camera",
+            "card_number": 2,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 4.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "wait",
+        "events": [],
+        "ending_ramps": [],
+        "children": [
+            {
+                "relative_time": 1.0,
+                "is_sweept": false,
+                "name": "light off",
+                "events": [
+                    {
+                        "type": "digital",
+                        "target_value": 0,
+                        "start_time": 1.0,
+                        "channel_name": "3",
+                        "comment": "",
+                        "start_time_instance": "light off",
+                        "is_sweept": false
+                    }
+                ],
+                "ending_ramps": [],
+                "children": [
+                    {
+                        "relative_time": 1.0,
+                        "is_sweept": false,
+                        "name": "light on",
+                        "events": [
+                            {
+                                "type": "digital",
+                                "target_value": 1,
+                                "start_time": 2.0,
+                                "channel_name": "3",
+                                "comment": "",
+                                "start_time_instance": "light on",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "relative_time": 0.5,
+                "is_sweept": false,
+                "name": "arm camera",
+                "events": [
+                    {
+                        "type": "jump",
+                        "jump_target_value": 3.3,
+                        "start_time": 0.5,
+                        "channel_name": "camera",
+                        "comment": "",
+                        "start_time_instance": "arm camera",
+                        "is_sweept": false
+                    }
+                ],
+                "ending_ramps": [],
+                "children": [
+                    {
+                        "relative_time": 0.001,
+                        "is_sweept": false,
+                        "name": "trigger camera",
+                        "events": [
+                            {
+                                "type": "jump",
+                                "jump_target_value": 0.0,
+                                "start_time": 0.501,
+                                "channel_name": "camera",
+                                "comment": "",
+                                "start_time_instance": "trigger camera",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

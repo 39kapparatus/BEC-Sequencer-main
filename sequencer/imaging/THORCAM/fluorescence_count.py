@@ -37,7 +37,7 @@ def Get_Atom_Number(ExposureTime= 2.391 * 10 ** (-3), ROI=[575,425,450,300],
     Delta = 2.5 * Lambda # in Hz
 
     # MOT Beams
-    I_MOT = (300e-3) / (1.25**2) # in W/cm2
+    I_MOT = (165e-3) / (2**2) # in W/cm2
 
     # Power in each Photon
     h = 6.626 * 10 ** (-34) # in J/Hz
@@ -70,8 +70,9 @@ def Get_Atom_Number(ExposureTime= 2.391 * 10 ** (-3), ROI=[575,425,450,300],
     if select_ROI:
         ## Select a ROI and Crop the Image
         ROI = cv2.selectROI("Select the ROI",Image_GS)
+        print(ROI)
         cv2.destroyAllWindows()
-    
+    ROI=[720,528,86,79]
     X = ROI[1]
     Y = ROI[0]
     DX = ROI[3]
@@ -82,7 +83,7 @@ def Get_Atom_Number(ExposureTime= 2.391 * 10 ** (-3), ROI=[575,425,450,300],
     ## Check if the ROI encloses the MOT in all Images
     
     #plt.imshow(Image_GS)
-    # plt.show()
+    #plt.show()
 
     CameraCount = np.sum(Image_GS)
     #Get the count

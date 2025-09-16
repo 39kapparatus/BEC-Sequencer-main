@@ -1,0 +1,33 @@
+{
+    "name": "t",
+    "sweep_dict": {},
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "digital",
+            "name": "1",
+            "card_number": 1,
+            "channel_number": 1,
+            "reset": false,
+            "reset_value": 0
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "root",
+        "events": [
+            {
+                "type": "digital",
+                "target_value": 1,
+                "start_time": 0,
+                "channel_name": "1",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            }
+        ],
+        "ending_ramps": [],
+        "children": []
+    }
+}

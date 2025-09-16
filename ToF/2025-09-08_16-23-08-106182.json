@@ -1,0 +1,165 @@
+{
+    "name": "ToF",
+    "sweep_dict": {
+        "Intialize Parameters|Trap AOM FM|target_value": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+        ]
+    },
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "digital",
+            "name": "0",
+            "card_number": 1,
+            "channel_number": 0,
+            "reset": false,
+            "reset_value": 0
+        },
+        {
+            "type": "digital",
+            "name": "3",
+            "card_number": 1,
+            "channel_number": 3,
+            "reset": false,
+            "reset_value": 0
+        },
+        {
+            "type": "analog",
+            "name": "camera",
+            "card_number": 2,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 4.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "wait",
+        "events": [
+            {
+                "type": "digital",
+                "target_value": 0,
+                "start_time": 0,
+                "channel_name": "0",
+                "comment": "",
+                "start_time_instance": "wait",
+                "is_sweept": false
+            }
+        ],
+        "ending_ramps": [],
+        "children": [
+            {
+                "relative_time": 1.0,
+                "is_sweept": false,
+                "name": "Turn light off",
+                "events": [
+                    {
+                        "type": "jump",
+                        "jump_target_value": 0.0,
+                        "start_time": 1.0,
+                        "channel_name": "camera",
+                        "comment": "",
+                        "start_time_instance": "Turn light off",
+                        "is_sweept": false
+                    }
+                ],
+                "ending_ramps": [],
+                "children": [
+                    {
+                        "relative_time": 1e-05,
+                        "is_sweept": false,
+                        "name": "second channel",
+                        "events": [
+                            {
+                                "type": "digital",
+                                "target_value": 0,
+                                "start_time": 1.00001,
+                                "channel_name": "3",
+                                "comment": "",
+                                "start_time_instance": "second channel",
+                                "is_sweept": false
+                            },
+                            {
+                                "type": "jump",
+                                "jump_target_value": 3.3,
+                                "start_time": 1.00001,
+                                "channel_name": "camera",
+                                "comment": "",
+                                "start_time_instance": "second channel",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": []
+                    },
+                    {
+                        "relative_time": 0.001,
+                        "is_sweept": false,
+                        "name": "Turn Light On",
+                        "events": [
+                            {
+                                "type": "digital",
+                                "target_value": 0,
+                                "start_time": 1.001,
+                                "channel_name": "0",
+                                "comment": "",
+                                "start_time_instance": "Turn Light On",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": [
+                            {
+                                "relative_time": 1e-05,
+                                "is_sweept": false,
+                                "name": "second channel on",
+                                "events": [
+                                    {
+                                        "type": "digital",
+                                        "target_value": 1,
+                                        "start_time": 1.00101,
+                                        "channel_name": "3",
+                                        "comment": "",
+                                        "start_time_instance": "second channel on",
+                                        "is_sweept": false
+                                    }
+                                ],
+                                "ending_ramps": [],
+                                "children": []
+                            },
+                            {
+                                "relative_time": 2e-05,
+                                "is_sweept": false,
+                                "name": "Trigger Camera",
+                                "events": [
+                                    {
+                                        "type": "digital",
+                                        "target_value": 1,
+                                        "start_time": 1.0010199999999998,
+                                        "channel_name": "0",
+                                        "comment": "",
+                                        "start_time_instance": "Trigger Camera",
+                                        "is_sweept": false
+                                    }
+                                ],
+                                "ending_ramps": [],
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

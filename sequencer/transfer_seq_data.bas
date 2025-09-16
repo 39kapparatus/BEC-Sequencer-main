@@ -83,6 +83,8 @@ dim card as long
 dim channel as long
 dim type_card_channel as long
 
+dim ret_val as long
+
 'Note that the output voltage range of the DACs for the AOUT8/16 modules is set to �10V bipolar and can't be
 'changed (ADwin Pro II hardware manual, page 96)
 '8 output channels, 16 bit resolution, < 3 us settling time
@@ -208,25 +210,33 @@ FINISH:
   'P2_SYNC_ALL(0111b) # this is wierd
   
   '***************************************************
- 
-  
+
 sub generic_write(type_card_channel , avalue)
   ' Extract x by shifting right by 12 bits
   type =Shift_Right (type_card_channel,12)And  1Fh
-  card =Shift_Right(type_card_channel, 7) And  1Fh
-  channel = type_card_channel And  7Fh
-    
+  channel =Shift_Right(type_card_channel, 7) And  1Fh
+  card = type_card_channel And  7Fh
   ' Extract y by masking the relevant bits and shifting right by 7 bits
   if (type = 0) then 
-    P2_Write_DAC(channel,card,avalue)
+    P2_Write_DAC(card,channel,avalue)
      
   else 
-    P2_Dig_Write_Latch(card,avalue)
+    ret_val = P2_Get_Digout_Long(card)
+    if (avalue = 1) then
+      ' Use bitwise OR to set the bit
+      ret_val = ret_val Or (Shift_Left (1, channel))
+    else:
+      ' Use bitwise AND with the complement to clear the bit
+      ret_val = ret_val And  (Not ((Shift_Left (1, channel))))
+
+    endif
+    P2_Dig_Write_Latch(card,ret_val) 
   endif 
     
   ' Extract z by masking the last 7 bits
     
 endsub
+
 
 
 

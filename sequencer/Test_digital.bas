@@ -79,6 +79,7 @@ dim card as long
 dim channel as long
 dim type_card_channel as long
 dim ret_val as long 
+dim mask as long
 'Note that the output voltage range of the DACs for the AOUT8/16 modules is set to ?10V bipolar and can't be
 'changed (ADwin Pro II hardware manual, page 96)
 '8 output channels, 16 bit resolution, < 3 us settling time
@@ -103,14 +104,14 @@ INIT:
   'Note that on power up all channels are at first configured as inputs
   'Bit = 0 --> input
   'Bit = 1 --> output
-  P2_DigProg(1,01Fh)
+  P2_DigProg(1, 0FFFFFFFFh)
   
   
     
   'configure the channels of each modules for sycnhronous output: this helps to make sure that all updates that are meant to be
   'simultaneous occur at the same time in the EVENT loop, not one after the other
   'for revision E digital cards, just need to set one bit to enable all channels
-  P2_Sync_Enable(1, 01b)
+  P2_Sync_Enable(1, 0Fh)
   
   'This is for analog channels; 0FFh corresponds to 11111111b and since our analog 
   'cards have 8 channels we sync enable all 8 of them
@@ -121,23 +122,16 @@ INIT:
 
   P2_SYNC_ALL(011111b) 
   
-
-  P2_Dig_Write_Latch(1,17)
   
   
 EVENT:
-  P2_SYNC_ALL(0111b) 
-  ProcessDelay = 1000000
-  'P2_Dig_Write_Latch(1,01b)
-  
-  Par_3= P2_Get_Digout_Long (1)
-  'P2_Dig_Write_Latch(1,01b)
-  'generic_write(4097 , 1)
-  if (Par_3 > 2000000000) then 
-    Par_3 =0
-  endif 
-  
-  P2_Dig_Write_Latch(1,Par_3+1)
+  P2_SYNC_ALL(011111b) 
+  ProcessDelay = 100000000
+  ret_val = P2_Get_Digout_Long(1)
+  Par_4 = ret_val
+  mask=0FFFFFFFFh
+  ret_val=(Not(ret_val) And mask)
+  P2_Dig_Write_Latch(1,11111111111111111111111111111111b)
   
   
   
@@ -186,43 +180,6 @@ FINISH:
   
   
   
-  
-  
-  
-  
-sub generic_write(type_card_channel , avalue)
-  
-  ' Extract x by shifting right by 12 bits
-  type =Shift_Right (type_card_channel,12)And  1Fh
-  card =Shift_Right(type_card_channel, 7) And  1Fh
-  channel = type_card_channel And  7Fh
-  P2_Dig_Write_Latch(1,01b)
-  ' Extract y by masking the relevant bits and shifting right by 7 bits
-  if (type = 0) then 
-    
-    'P2_Write_DAC(channel,card,avalue)
-     
-  else 
-   
-    ret_val = P2_Dig_Read_Latch(card)
-    
-    if (avalue = 1) then
-      ' Use bitwise OR to set the bit
-      ret_val = ret_val Or (Shift_Right (channel,1))
-    else:
-      ' Use bitwise AND with the complement to clear the bit
-      ret_val = ret_val And  (Not ((Shift_Right (channel,1))))
-
-    endif 
-    Par_4 = ret_val
-    
-
-    
-  endif 
-    
-  ' Extract z by masking the last 7 bits
-    
-endsub
 
 
 

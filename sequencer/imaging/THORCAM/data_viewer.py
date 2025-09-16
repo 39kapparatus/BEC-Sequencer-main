@@ -1,5 +1,4 @@
 import sys
-import os
 import json
 import numpy as np
 from PyQt5.QtWidgets import QApplication, QMenuBar,QMainWindow, QLabel, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QAction, QFileDialog

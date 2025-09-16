@@ -37,7 +37,6 @@ from PyQt5.QtCore import QPoint, Qt, QSize
 
 
 
-
 from sequencer.GUI.Dialogs.channel_dialog import ChannelDialog, Edit_Digital_Channel, Edit_Analog_Channel,CustomDialog
 from sequencer.GUI.Dialogs.events_dialogs import AnalogEventDialog, DigitalEventDialog
 from sequencer.GUI.Dialogs.sweep_dialog import SweepEventDialog

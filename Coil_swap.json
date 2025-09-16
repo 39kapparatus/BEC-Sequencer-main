@@ -1,0 +1,98 @@
+{
+    "name": "Turn Off Coils",
+    "sweep_dict": {},
+    "sweep_values": [],
+    "channels": [
+        {
+            "type": "analog",
+            "name": "Coil TTL",
+            "card_number": 5,
+            "channel_number": 2,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        },
+        {
+            "type": "analog",
+            "name": "HH",
+            "card_number": 5,
+            "channel_number": 3,
+            "reset": false,
+            "reset_value": 0.0,
+            "max_voltage": 5.0,
+            "min_voltage": 0.0,
+            "LIMIT": 65535,
+            "RANGE": 20,
+            "OFFSET": 10
+        }
+    ],
+    "root_time_instance": {
+        "relative_time": 0,
+        "is_sweept": false,
+        "name": "root",
+        "events": [
+            {
+                "type": "jump",
+                "jump_target_value": 0.0,
+                "start_time": 0,
+                "channel_name": "Coil TTL",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            },
+            {
+                "type": "jump",
+                "jump_target_value": 0.0,
+                "start_time": 0,
+                "channel_name": "HH",
+                "comment": "",
+                "start_time_instance": "root",
+                "is_sweept": false
+            }
+        ],
+        "ending_ramps": [],
+        "children": [
+            {
+                "relative_time": 1.0,
+                "is_sweept": false,
+                "name": "swap",
+                "events": [
+                    {
+                        "type": "jump",
+                        "jump_target_value": 0.0,
+                        "start_time": 1.0,
+                        "channel_name": "HH",
+                        "comment": "",
+                        "start_time_instance": "swap",
+                        "is_sweept": false
+                    }
+                ],
+                "ending_ramps": [],
+                "children": [
+                    {
+                        "relative_time": 1.0,
+                        "is_sweept": false,
+                        "name": "on",
+                        "events": [
+                            {
+                                "type": "jump",
+                                "jump_target_value": 5.0,
+                                "start_time": 2.0,
+                                "channel_name": "Coil TTL",
+                                "comment": "",
+                                "start_time_instance": "on",
+                                "is_sweept": false
+                            }
+                        ],
+                        "ending_ramps": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

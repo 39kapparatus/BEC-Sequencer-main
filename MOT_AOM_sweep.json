@@ -2,10 +2,12 @@
     "name": "MOT Parameter Sweep",
     "sweep_dict": {
         "Intialize Parameters|Trap AOM FM|target_value": [
+            0.0,
+            1.0,
             2.0,
-            2.1,
-            2.2,
-            2.3000000000000003
+            3.0,
+            4.0,
+            5.0
         ]
     },
     "sweep_values": [],

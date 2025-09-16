@@ -1,7 +1,7 @@
 {
-    "default_source_path": "C:/Users/E3/Desktop/BEC-Sequencer-main (1)/BEC-Sequencer-main/Cecilia_Camera_testing",
-    "default_destination_path": "C:/Users/E3/Desktop/BEC-Sequencer-main (1)/BEC-Sequencer-main/Cecilia_Camera_testing/Images",
-    "default_saving_path": "C:/Users/E3/Desktop/BEC-Sequencer-main (1)/BEC-Sequencer-main/Cecilia_Camera_testing/Images",
-    "default_exposure_time": 40006,
+    "default_source_path": "C:/Users/E3/Desktop/BEC-Sequencer-main (1)/BEC-Sequencer-main/Trigger_match",
+    "default_destination_path": "C:/Users/E3/Desktop/BEC-Sequencer-main (1)/BEC-Sequencer-main/Trigger_match/images",
+    "default_saving_path": "C:/Users/E3/Desktop/BEC-Sequencer-main (1)/BEC-Sequencer-main/Trap AOM sweep/images",
+    "default_exposure_time": 10000,
     "default_gain": 0
 }

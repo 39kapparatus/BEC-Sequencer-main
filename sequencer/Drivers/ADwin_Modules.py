@@ -5,6 +5,7 @@
 
 import ADwin
 import os
+import datetime
 import sys 
 from copy import deepcopy 
 import numpy as np
@@ -13,6 +14,7 @@ from sequencer.Sequence.channel import Digital_Channel, Analog_Channel
 from sequencer.Sequence.event import  Jump, Ramp
 
 import time
+from PyQt5.QtCore import QTimer
 
 
 def encode_channel(type: int, channel: int, card: int) -> int:
@@ -82,10 +84,8 @@ def calculate_sequence_data_eff(sequence: Sequence,adwin_driver) -> None:
 
     processdelay_times = []    
     processdelay_value_list = []    
-
     all_events = deepcopy(sequence.get_all_events())
     time_ranges=calculate_time_ranges(all_events)
-
     start_time2 = time.time()
 
     for time_range in time_ranges:
@@ -123,37 +123,30 @@ def calculate_sequence_data_eff(sequence: Sequence,adwin_driver) -> None:
             
             for event in time_range[-1]: 
 
-                
-
                 temp_channel_number_list.append(np.ones_like(time_axis)* encode_channel(type=0 if isinstance(event.channel,Analog_Channel)else 1,channel=event.channel.channel_number,card=event.channel.card_number))
-                
-                if isinstance(event.behavior, Jump):
-                
-                    if isinstance(event.channel, Digital_Channel):
-                        temp_channel_value_list.append(event.behavior.target_value)
-                    else :                         
-                        temp_channel_value_list.append(event.channel.discretize(event.channel.default_voltage_func(event.behavior.target_value)))
+                print(event.behavior)
+                if isinstance(event.behavior, Jump):                    
+                    temp_channel_value_list.append(event.channel.discretize(event.channel.default_voltage_func(event.behavior.target_value)))
                 
                 elif isinstance(event.behavior, Ramp) and isinstance(event.channel, Analog_Channel): 
-                    temp_channel_value_list.append(event.channel.discretize(event.channel.default_voltage_func(event.behavior.func(time_axis - event.start_time))))  
+                    temp_channel_value_list.append(event.channel.discretize(event.channel.default_voltage_func(event.behavior.func(time_axis - event.start_time))))
+                
+                elif isinstance(event.channel, Digital_Channel):
+                    temp_channel_value_list.append(event.behavior.target_value)
                     
-
-            
+            print(temp_channel_number_list)
+            print(temp_channel_value_list)
             stacked_temp_channel_number_list = np.vstack( list(temp_channel_number_list))
             stacked_temp_channel_value_list = np.vstack( list(temp_channel_value_list))
 
-            
             stacked_temp_channel_number_list = stacked_temp_channel_number_list.T
             stacked_temp_channel_value_list = stacked_temp_channel_value_list.T
             
-            
             stacked_temp_channel_number_list=stacked_temp_channel_number_list.flatten()
             stacked_temp_channel_value_list=stacked_temp_channel_value_list.flatten()
-            
 
             channel_number=np.append(channel_number,stacked_temp_channel_number_list)
             channel_value=np.append(channel_value,stacked_temp_channel_value_list)
-
         else: 
             time_to_be_delayed = time_range[0][1]-time_range[0][0]
             
@@ -173,7 +166,6 @@ def calculate_sequence_data_eff(sequence: Sequence,adwin_driver) -> None:
             # print("array_of_delays: ", array_of_delays)
             
             update_list=np.append(update_list,array_of_delays)
-
     
     total_time = time.time() - start_time2 
     
@@ -296,19 +288,75 @@ class ADwin_Driver:
         # <0: Process is being stopped.
         return status > 0
     
-    def wait_for_process_to_complete(self, poll_interval=1):
+    '''def wait_for_process_to_complete(self, poll_interval=1):
         while self.is_process_running():
             print("Waiting for the current process to complete...")
-            time.sleep(poll_interval)
+            time.sleep(poll_interval)'''
 
-    def initiate_all_experiments(self, process_number=1,repeat=1):
+    def wait_for_process_to_complete(self, poll_interval=1000):
+        if not self.is_process_running():
+            self.continue_experiments()
+            return
+
+        print("Waiting for the current process to complete...")
+        QTimer.singleShot(poll_interval, lambda: self.wait_for_process_to_complete(poll_interval))
+   
+    '''def initiate_all_experiments(self, process_number=1,repeat=1):
         for i in range(len(self.queue)):
             print(f"Initiating experiment {i + 1}/{len(self.queue)}")
             self.initiate_experiment(process_number, index=i,repeat=repeat)
             self.wait_for_process_to_complete()
             print(f"Experiment {i + 1} Completed.")
         #clear the queue after all the experiments have been completed
-        self.queue = []
+        self.queue = []'''
+    
+    def initiate_all_experiments(self, process_number=1, repeat=1,save=False, save_path='.', sequence:Sequence=None):
+        self._experiment_index = 0
+        self._process_number = process_number
+        self._repeat = repeat
+        self.save=save
+        self.save_path=save_path
+        self.sequence=sequence
+
+        print(f"Initiating experiment 1/{len(self.queue)}")
+        self.initiate_experiment(process_number, index=0, repeat=repeat)
+        time.sleep(1)
+        if self.save: 
+                now = datetime.datetime.now()
+                
+                time_format = now.strftime("%Y-%m-%d_%H-%M-%S-%f")
+                sequence.to_json(filename=os.path.join(self.save_path, f"{time_format}.json"))
+                #remove current data from the folder 
+                for file in os.listdir(self.save_path):
+                    if file.startswith("current"):
+                        os.remove(os.path.join(self.save_path, file))
+                time_format = now.strftime("%Y-%m-%d_%H-%M-%S-%f")
+                sequence.to_json(filename=os.path.join(self.save_path, f"current_{time_format}.json"))
+        self.wait_for_process_to_complete()
+
+    def continue_experiments(self):
+        self._experiment_index += 1
+        if self._experiment_index >= len(self.queue):
+            print("All experiments completed.")
+            self.queue = []
+            if hasattr(self, 'on_experiment_sequence_complete') and callable(self.on_experiment_sequence_complete):
+                self.on_experiment_sequence_complete()
+            return
+
+        print(f"Initiating experiment {self._experiment_index + 1}/{len(self.queue)}")
+        self.initiate_experiment(self._process_number, index=self._experiment_index, repeat=self._repeat)
+        '''if self.save: 
+                now = datetime.datetime.now()
+                
+                time_format = now.strftime("%Y-%m-%d_%H-%M-%S-%f")
+                self.sequence.to_json(filename=os.path.join(self.save_path, f"{time_format}.json"))
+                #remove current data from the folder 
+                for file in os.listdir(self.save_path):
+                    if file.startswith("current"):
+                        os.remove(os.path.join(self.save_path, file))
+                time_format = now.strftime("%Y-%m-%d_%H-%M-%S-%f")
+                self.sequence.to_json(filename=os.path.join(self.save_path, f"current_{time_format}.json"))'''
+        self.wait_for_process_to_complete()
     
     
     def change_process(self, process_file):
@@ -429,7 +477,9 @@ if __name__ == "__main__":
     
     
 
-    adwin_driver.initiate_all_experiments(process_number=1,repeat=1)
+    # adwin_driver.initiate_all_experiments(process_number=1,repeat=1)
+    adwin_driver.initiate_all_experiments(process_number=2,repeat=1)
+
 #     # adwin_driver.repeat_process(process_number=1, repeat=1000,poll_interval=0.1)
 
 

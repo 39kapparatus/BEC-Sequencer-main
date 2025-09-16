@@ -394,14 +394,43 @@ class Runner(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
+    def run_next_sweep_sequence(self):
+        if self.sweep_index >= self.sweep_total:
+            print("Sweep complete.")
+            return
+
+        sequence = self.main_sweep_queue[self.sweep_index]
+        print(f"Running sweep sequence {self.sweep_index + 1}/{self.sweep_total}")
+        self.run_sequence(sequence)
+
+        self.refresh_queue(Working=True)
+
+        # wait until current sequence finish, then continue sweep
+        self.ADwin.on_experiment_sequence_complete = self.continue_sweep_after_experiment
+
+    def continue_sweep_after_experiment(self):
+        self.sweep_index += 1
+        #print(self.sweep_index)
+        self.run_next_sweep_sequence()
+
     def run_sweep(self):
-        try:
+        '''try:
             if self.combo_sweep.currentText() == "main":
                 self.main_sweep_queue 
-                # run the first sequence in the queue and pop it out untill there is not element and refresh UI 
+                # run the first sequence in the queue and pop it out until there is no element and refresh UI 
                 for sequence in self.main_sweep_queue:
                     self.run_sequence(sequence)
-                    self.refresh_queue(Working=True)
+                    self.refresh_queue(Working=True)'''
+        try:
+            if self.combo_sweep.currentText() == "main":
+                if not self.main_sweep_queue:
+                    print("Sweep queue is empty.")
+                    return
+
+                self.sweep_index = 0
+                self.sweep_total = len(self.main_sweep_queue)
+                print(self.sweep_total)
+                self.run_next_sweep_sequence()
 
 
 
@@ -423,7 +452,7 @@ class Runner(QWidget):
     def run_sequence(self, sequence:Sequence):
         try:
             self.progress_bar.setValue(100)
-            if self.Save_Data_CheckBox.isChecked(): 
+            '''if self.Save_Data_CheckBox.isChecked(): 
                 now = datetime.datetime.now()
                 
                 time_format = now.strftime("%Y-%m-%d_%H-%M-%S-%f")
@@ -433,10 +462,10 @@ class Runner(QWidget):
                     if file.startswith("current"):
                         os.remove(os.path.join(self.save_path, file))
                 time_format = now.strftime("%Y-%m-%d_%H-%M-%S-%f")
-                sequence.to_json(filename=os.path.join(self.save_path, f"current_{time_format}.json"))
+                sequence.to_json(filename=os.path.join(self.save_path, f"current_{time_format}.json"))'''
             self.ADwin.add_to_queue(sequence)
             print(f"Running sequence: {sequence.sequence_name}")
-            self.ADwin.initiate_all_experiments()
+            self.ADwin.initiate_all_experiments(save=self.Save_Data_CheckBox.isChecked(),save_path=self.save_path,sequence=sequence)
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
